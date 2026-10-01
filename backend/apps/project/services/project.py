@@ -4,7 +4,7 @@ from django.db import transaction
 from apps.project.dtos import ProjectCreateOutputDTO, ProjectMembershipDTO
 from apps.project.exceptions import (
     ProjectNameRequiredError,
-    ProjectOwnerNotFoundError,
+    UserNotFoundError,
 )
 from apps.project.models import Project, ProjectMembership
 
@@ -21,7 +21,7 @@ def project_create(*, name: str, owner_user_id: str) -> ProjectCreateOutputDTO:
     try:
         owner = user_model.objects.get(pk=owner_user_id)
     except user_model.DoesNotExist as exc:
-        raise ProjectOwnerNotFoundError("Project owner does not exist.") from exc
+        raise UserNotFoundError("User does not exist.") from exc
 
     project = Project(name=normalized_name)
     project.full_clean()

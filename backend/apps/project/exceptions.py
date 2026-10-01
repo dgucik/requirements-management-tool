@@ -5,5 +5,5 @@ class ProjectNameRequiredError(BusinessRuleError):
     """Raised when a project is created without a name."""
 
 
-class ProjectOwnerNotFoundError(EntityNotFoundError):
-    """Raised when the project owner cannot be found."""
+class UserNotFoundError(EntityNotFoundError):
+    """Raised when a referenced user cannot be found."""

@@ -35,6 +35,21 @@ Authorization: Bearer <access-token>
 
 Refresh an expired access token with `POST /api/auth/token/refresh/` and the refresh token.
 
+## Tests
+
+Install the project and development dependencies, then run:
+
+```bash
+uv sync
+uv run pytest
+```
+
+To run only the project service tests:
+
+```bash
+uv run pytest apps/project/tests/services/test_project_create.py
+```
+
 ## Configuration
 
 Copy `.env.example` to `.env` and adjust the values for your environment. Settings are split into
