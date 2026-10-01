@@ -35,3 +35,11 @@ class ProjectUpdateOutputSerializer(serializers.Serializer):
 
     id = serializers.UUIDField()
     name = serializers.CharField()
+
+
+class ProjectListOutputSerializer(serializers.Serializer):
+    """Serialize projects available to the authenticated user."""
+
+    id = serializers.UUIDField()
+    name = serializers.CharField()
+    role = serializers.CharField()

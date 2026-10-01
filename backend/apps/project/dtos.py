@@ -26,3 +26,12 @@ class ProjectUpdateOutputDTO:
 
     id: str
     name: str
+
+
+@dataclass(frozen=True)
+class ProjectListItemDTO:
+    """Serialized project membership data returned in a project list."""
+
+    id: str
+    name: str
+    role: str

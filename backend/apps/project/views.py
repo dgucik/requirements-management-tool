@@ -6,16 +6,25 @@ from rest_framework.views import APIView
 from apps.project.serializers import (
     ProjectCreateInputSerializer,
     ProjectCreateOutputSerializer,
+    ProjectListOutputSerializer,
     ProjectUpdateInputSerializer,
     ProjectUpdateOutputSerializer,
 )
+from apps.project.selectors import project_list
 from apps.project.services import project_create, project_delete, project_update
 
 
-class ProjectCreateApi(APIView):
-    """Create a project for the authenticated user."""
+class ProjectCollectionApi(APIView):
+    """List and create projects for authenticated users."""
 
     permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """Return projects where the authenticated user has a membership."""
+
+        projects = project_list(user_id=str(request.user.pk))
+        output_serializer = ProjectListOutputSerializer(projects, many=True)
+        return Response(output_serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
         """Validate the request and delegate project creation to the service."""
