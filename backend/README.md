@@ -16,6 +16,25 @@ uv run python manage.py runserver
 The server runs at <http://127.0.0.1:8000/>. The admin site is available at
 <http://127.0.0.1:8000/admin/>.
 
+## Authentication
+
+The API uses JWT authentication. Obtain a token pair with:
+
+```http
+POST /api/auth/token/
+Content-Type: application/json
+
+{"username": "your-username", "password": "your-password"}
+```
+
+Use the returned access token for protected endpoints:
+
+```text
+Authorization: Bearer <access-token>
+```
+
+Refresh an expired access token with `POST /api/auth/token/refresh/` and the refresh token.
+
 ## Configuration
 
 Copy `.env.example` to `.env` and adjust the values for your environment. Settings are split into
