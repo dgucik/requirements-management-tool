@@ -1,9 +1,9 @@
 import pytest
 from django.contrib.auth import get_user_model
 
-from apps.project.exceptions import ProjectNameRequiredError, UserNotFoundError
-from apps.project.models import Project, ProjectMembership
-from apps.project.services import project_create
+from ...exceptions import ProjectNameRequiredError, UserNotFoundError
+from ...models import Project, ProjectMembership
+from ...services import project_create
 
 
 @pytest.mark.django_db

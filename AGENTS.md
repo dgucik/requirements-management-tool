@@ -87,3 +87,13 @@ repository-specific constraints below taking precedence.
 - Include `Args`, `Returns`, and `Raises` sections when they add useful information; do not add
   empty or redundant sections.
 - Test functions do not require docstrings.
+
+## Import conventions
+
+- Use relative imports for dependencies inside the same Django module/app. For example, code in
+  `apps.project` should import `Project` from `apps.project.models` using `from .models import
+  Project` or `from ..models import Project`, depending on the package depth.
+- Use absolute imports for dependencies across Django modules. For example, code in `apps.project`
+  importing from `core` should use `from core.exceptions import ApplicationError`.
+- Do not use absolute imports for same-module dependencies or relative imports to cross module
+  boundaries.

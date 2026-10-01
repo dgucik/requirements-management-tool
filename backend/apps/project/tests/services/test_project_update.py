@@ -1,12 +1,12 @@
 import pytest
 from django.contrib.auth import get_user_model
 
-from apps.project.exceptions import (
+from ...exceptions import (
     ProjectNameRequiredError,
     ProjectUpdateForbiddenError,
 )
-from apps.project.models import Project, ProjectMembership
-from apps.project.services import project_update
+from ...models import Project, ProjectMembership
+from ...services import project_update
 
 
 @pytest.mark.django_db

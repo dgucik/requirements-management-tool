@@ -3,12 +3,12 @@ import uuid
 import pytest
 from django.contrib.auth import get_user_model
 
-from apps.project.exceptions import (
+from ...exceptions import (
     ProjectDeletionForbiddenError,
     ProjectNotFoundError,
 )
-from apps.project.models import Project, ProjectMembership
-from apps.project.services import project_delete
+from ...models import Project, ProjectMembership
+from ...services import project_delete
 
 
 @pytest.mark.django_db

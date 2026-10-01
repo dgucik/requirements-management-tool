@@ -1,5 +1,5 @@
-from apps.project.dtos import ProjectListItemDTO
-from apps.project.models import Project
+from ..dtos import ProjectListItemDTO
+from ..models import Project
 
 
 def project_list(*, user_id: str) -> list[ProjectListItemDTO]:

@@ -3,15 +3,15 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.project.serializers import (
+from .serializers import (
     ProjectCreateInputSerializer,
     ProjectCreateOutputSerializer,
     ProjectListOutputSerializer,
     ProjectUpdateInputSerializer,
     ProjectUpdateOutputSerializer,
 )
-from apps.project.selectors import project_list
-from apps.project.services import project_create, project_delete, project_update
+from .selectors import project_list
+from .services import project_create, project_delete, project_update
 
 
 class ProjectCollectionApi(APIView):

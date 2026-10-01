@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.serializers import as_serializer_error
 from rest_framework.views import exception_handler
 
-from core.exceptions import (
+from .exceptions import (
     ApplicationError,
     BusinessRuleError,
     EntityNotFoundError,

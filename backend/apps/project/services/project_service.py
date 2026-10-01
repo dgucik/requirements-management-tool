@@ -1,19 +1,19 @@
 from django.contrib.auth import get_user_model
 from django.db import transaction
 
-from apps.project.dtos import (
+from ..dtos import (
     ProjectCreateOutputDTO,
     ProjectMembershipDTO,
     ProjectUpdateOutputDTO,
 )
-from apps.project.exceptions import (
+from ..exceptions import (
     ProjectDeletionForbiddenError,
     ProjectNameRequiredError,
     ProjectNotFoundError,
     ProjectUpdateForbiddenError,
     UserNotFoundError,
 )
-from apps.project.models import Project, ProjectMembership
+from ..models import Project, ProjectMembership
 
 
 @transaction.atomic

@@ -1,8 +1,8 @@
 import pytest
 from django.contrib.auth import get_user_model
 
-from apps.project.models import Project, ProjectMembership
-from apps.project.selectors import project_list
+from ...models import Project, ProjectMembership
+from ...selectors import project_list
 
 
 @pytest.mark.django_db
