@@ -28,8 +28,20 @@ repository-specific constraints below taking precedence.
   indirectly.
 - Do not solve a shared dependency by creating a service-selector cycle. Move genuinely shared,
   side-effect-free logic to a neutral module such as `domain.py` or `utils.py`.
-- APIs, serializers, and views should remain thin: parse/validate transport data, call one service
-  or selector, and serialize the result. Business logic belongs in services or selectors.
+
+## Views and APIs
+
+- Views/API endpoints are thin transport layers, not a place for business logic.
+- A view may authenticate/authorize the request, parse and validate transport input, call one
+  selector for reads or one service for writes, and serialize the response.
+- Reads must be delegated to selectors; writes and state-changing operations must be delegated to
+  services.
+- Do not put business rules, ORM workflows, transactions, or side effects in views, viewsets, or
+  serializers.
+- Prefer one API endpoint per operation and simple `APIView` or `GenericAPIView` classes. Avoid
+  abstractions that hide the service/selector call.
+- Keep input and output serializers separate. Serializers validate and represent transport data;
+  they do not implement domain behavior.
 
 ## Function inputs and outputs
 
