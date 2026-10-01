@@ -67,3 +67,24 @@ class ProjectMembershipCreateOutputSerializer(serializers.Serializer):
     user_id = serializers.CharField()
     project_id = serializers.UUIDField()
     role = serializers.CharField()
+
+
+class ProjectMembershipUpdateInputSerializer(serializers.Serializer):
+    """Validate input required to update a project membership."""
+
+    role = serializers.ChoiceField(
+        choices=[
+            ProjectMembership.Role.VIEWER,
+            ProjectMembership.Role.EDITOR,
+            ProjectMembership.Role.MODERATOR,
+        ]
+    )
+
+
+class ProjectMembershipUpdateOutputSerializer(serializers.Serializer):
+    """Serialize a membership after it has been updated."""
+
+    id = serializers.UUIDField()
+    user_id = serializers.CharField()
+    project_id = serializers.UUIDField()
+    role = serializers.CharField()

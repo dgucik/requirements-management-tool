@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db import transaction
 
-from ..dtos import ProjectMembershipCreateDTO
+from ..dtos import ProjectMembershipCreateDTO, ProjectMembershipUpdateDTO
 from ..exceptions import (
     ProjectMembershipAlreadyExistsError,
     ProjectMembershipManagementForbiddenError,
@@ -150,3 +150,69 @@ def project_membership_delete(
         )
 
     membership.delete()
+
+
+@transaction.atomic
+def project_membership_update(
+    *, project_id: str, membership_id: str, requester_user_id: str, role: str
+) -> ProjectMembershipUpdateDTO:
+    """Update a project membership role according to project permissions.
+
+    Args:
+        project_id: Identifier of the project containing the membership.
+        membership_id: Identifier of the membership to update.
+        requester_user_id: Identifier of the user requesting the update.
+        role: New non-owner role assigned to the membership.
+
+    Returns:
+        Serialized membership data with the updated role.
+
+    Raises:
+        ProjectNotFoundError: If the project does not exist.
+        ProjectMembershipNotFoundError: If the membership does not belong to the project.
+        ProjectMembershipManagementForbiddenError: If the requester is not an owner or moderator.
+        ProjectMembershipOwnerRoleForbiddenError: If the requested role is Owner or invalid.
+    """
+
+    try:
+        project = Project.objects.get(pk=project_id)
+    except Project.DoesNotExist as exc:
+        raise ProjectNotFoundError("Project does not exist.") from exc
+
+    try:
+        membership = ProjectMembership.objects.get(
+            pk=membership_id,
+            project=project,
+        )
+    except ProjectMembership.DoesNotExist as exc:
+        raise ProjectMembershipNotFoundError(
+            "Project membership does not exist."
+        ) from exc
+
+    requester_can_manage = ProjectMembership.objects.filter(
+        project=project,
+        user_id=requester_user_id,
+        role__in=[
+            ProjectMembership.Role.OWNER,
+            ProjectMembership.Role.MODERATOR,
+        ],
+    ).exists()
+    if not requester_can_manage:
+        raise ProjectMembershipManagementForbiddenError(
+            "Only project owners and moderators can manage memberships."
+        )
+
+    if role == ProjectMembership.Role.OWNER or role not in ProjectMembership.Role.values:
+        raise ProjectMembershipOwnerRoleForbiddenError(
+            "The Owner role cannot be assigned to a project membership."
+        )
+
+    membership.role = role
+    membership.save(update_fields=["role", "updated_at"])
+
+    return ProjectMembershipUpdateDTO(
+        id=str(membership.id),
+        user_id=str(membership.user_id),
+        project_id=str(membership.project_id),
+        role=membership.role,
+    )

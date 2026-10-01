@@ -1,9 +1,11 @@
 from .project_collection_api import ProjectCollectionApi
 from .project_detail_api import ProjectDetailApi
-from .project_membership_api import ProjectMembershipApi
+from .project_membership_collection_api import ProjectMembershipCollectionApi
+from .project_membership_detail_api import ProjectMembershipDetailApi
 
 __all__ = [
     "ProjectCollectionApi",
     "ProjectDetailApi",
-    "ProjectMembershipApi",
+    "ProjectMembershipCollectionApi",
+    "ProjectMembershipDetailApi",
 ]

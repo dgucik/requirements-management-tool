@@ -30,7 +30,7 @@ class ProjectMembershipManagementForbiddenError(PermissionDeniedError):
 
 
 class ProjectMembershipOwnerRoleForbiddenError(BusinessRuleError):
-    """Raised when membership creation attempts to assign the Owner role."""
+    """Raised when a membership operation attempts to assign the Owner role."""
 
 
 class ProjectMembershipAlreadyExistsError(BusinessRuleError):
