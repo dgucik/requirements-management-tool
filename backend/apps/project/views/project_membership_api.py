@@ -7,11 +7,11 @@ from ..serializers import (
     ProjectMembershipCreateInputSerializer,
     ProjectMembershipCreateOutputSerializer,
 )
-from ..services import project_membership_create
+from ..services import project_membership_create, project_membership_delete
 
 
-class ProjectMembershipCreateApi(APIView):
-    """Add a non-owner member to a project."""
+class ProjectMembershipApi(APIView):
+    """Create or delete a project membership."""
 
     permission_classes = [IsAuthenticated]
 
@@ -29,3 +29,13 @@ class ProjectMembershipCreateApi(APIView):
         )
         output_serializer = ProjectMembershipCreateOutputSerializer(membership)
         return Response(output_serializer.data, status=status.HTTP_201_CREATED)
+
+    def delete(self, request, project_id, membership_id):
+        """Delegate membership deletion to the project membership service."""
+
+        project_membership_delete(
+            project_id=str(project_id),
+            membership_id=str(membership_id),
+            requester_user_id=str(request.user.pk),
+        )
+        return Response(status=status.HTTP_204_NO_CONTENT)

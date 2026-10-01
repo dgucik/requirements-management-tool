@@ -35,3 +35,11 @@ class ProjectMembershipOwnerRoleForbiddenError(BusinessRuleError):
 
 class ProjectMembershipAlreadyExistsError(BusinessRuleError):
     """Raised when a user already belongs to a project."""
+
+
+class ProjectMembershipNotFoundError(EntityNotFoundError):
+    """Raised when a project membership does not exist."""
+
+
+class ProjectOwnerMembershipDeletionForbiddenError(PermissionDeniedError):
+    """Raised when a moderator tries to remove an owner membership."""

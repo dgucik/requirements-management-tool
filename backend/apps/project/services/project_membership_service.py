@@ -5,7 +5,9 @@ from ..dtos import ProjectMembershipCreateDTO
 from ..exceptions import (
     ProjectMembershipAlreadyExistsError,
     ProjectMembershipManagementForbiddenError,
+    ProjectMembershipNotFoundError,
     ProjectMembershipOwnerRoleForbiddenError,
+    ProjectOwnerMembershipDeletionForbiddenError,
     ProjectNotFoundError,
     UserNotFoundError,
 )
@@ -86,3 +88,65 @@ def project_membership_create(
         project_id=str(project.id),
         role=membership.role,
     )
+
+
+@transaction.atomic
+def project_membership_delete(
+    *, project_id: str, membership_id: str, requester_user_id: str
+) -> None:
+    """Delete a project membership according to project role permissions.
+
+    Args:
+        project_id: Identifier of the project containing the membership.
+        membership_id: Identifier of the membership to delete.
+        requester_user_id: Identifier of the user requesting deletion.
+
+    Raises:
+        ProjectNotFoundError: If the project does not exist.
+        ProjectMembershipNotFoundError: If the membership does not belong to the project.
+        ProjectMembershipManagementForbiddenError: If the requester is not an owner or moderator.
+        ProjectOwnerMembershipDeletionForbiddenError: If a moderator targets an owner.
+    """
+
+    try:
+        project = Project.objects.get(pk=project_id)
+    except Project.DoesNotExist as exc:
+        raise ProjectNotFoundError("Project does not exist.") from exc
+
+    try:
+        membership = ProjectMembership.objects.get(
+            pk=membership_id,
+            project=project,
+        )
+    except ProjectMembership.DoesNotExist as exc:
+        raise ProjectMembershipNotFoundError(
+            "Project membership does not exist."
+        ) from exc
+
+    try:
+        requester_membership = ProjectMembership.objects.get(
+            project=project,
+            user_id=requester_user_id,
+        )
+    except ProjectMembership.DoesNotExist as exc:
+        raise ProjectMembershipManagementForbiddenError(
+            "Only project owners and moderators can manage memberships."
+        ) from exc
+
+    if requester_membership.role not in {
+        ProjectMembership.Role.OWNER,
+        ProjectMembership.Role.MODERATOR,
+    }:
+        raise ProjectMembershipManagementForbiddenError(
+            "Only project owners and moderators can manage memberships."
+        )
+
+    if (
+        requester_membership.role == ProjectMembership.Role.MODERATOR
+        and membership.role == ProjectMembership.Role.OWNER
+    ):
+        raise ProjectOwnerMembershipDeletionForbiddenError(
+            "Moderators cannot delete owner memberships."
+        )
+
+    membership.delete()
