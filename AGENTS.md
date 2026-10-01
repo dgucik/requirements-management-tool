@@ -68,7 +68,10 @@ repository-specific constraints below taking precedence.
   inherit from the shared base exceptions in `core/exceptions.py`.
 - Do not create app-specific catch-all base exceptions such as `ProjectError`; use the shared
   exception hierarchy instead.
-- Views/API layers translate business exceptions into HTTP responses.
+- The central exception handler maps `BusinessRuleError` to HTTP 400 and `EntityNotFoundError` to
+  HTTP 404. Exception classes must not contain HTTP status codes.
+- A central DRF exception handler translates business exceptions into HTTP responses; views should
+  not catch and remap domain exceptions themselves.
 
 ## Testing
 
