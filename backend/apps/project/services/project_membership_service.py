@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db import transaction
 
-from ..dtos import ProjectMembershipCreateOutputDTO
+from ..dtos import ProjectMembershipCreateDTO
 from ..exceptions import (
     ProjectMembershipAlreadyExistsError,
     ProjectMembershipManagementForbiddenError,
@@ -15,7 +15,7 @@ from ..models import Project, ProjectMembership
 @transaction.atomic
 def project_membership_create(
     *, project_id: str, user_id: str, requester_user_id: str, role: str
-) -> ProjectMembershipCreateOutputDTO:
+) -> ProjectMembershipCreateDTO:
     """Add a user to a project with an allowed non-owner role.
 
     Args:
@@ -80,7 +80,7 @@ def project_membership_create(
         role=role,
     )
 
-    return ProjectMembershipCreateOutputDTO(
+    return ProjectMembershipCreateDTO(
         id=str(membership.id),
         user_id=str(user.pk),
         project_id=str(project.id),

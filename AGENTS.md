@@ -53,6 +53,10 @@ repository-specific constraints below taking precedence.
   datetimes to strings).
 - Define service/selector DTO dataclasses in the app's `dtos.py` module. DTOs are the only allowed
   structured return type for services and selectors.
+- DTO names must match the operation that returns them using the `<Operation>DTO` convention, for
+  example `ProjectCreateDTO`, `ProjectUpdateDTO`, or `ProjectListDTO`.
+- Do not use `Output` in DTO names. DTOs always represent service/selector output. If a dataclass
+  is ever required for service/selector input, use a `<Operation>Payload` name instead.
 - Pass identifiers and plain values, not Django model instances, QuerySets, managers, requests,
   serializers, uploaded files, or other framework objects.
 - Never return Django models, QuerySets, model managers, serializers, HTTP responses, or other

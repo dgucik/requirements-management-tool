@@ -1,8 +1,8 @@
-from ..dtos import ProjectListItemDTO
+from ..dtos import ProjectListDTO
 from ..models import Project
 
 
-def project_list(*, user_id: str) -> list[ProjectListItemDTO]:
+def project_list(*, user_id: str) -> list[ProjectListDTO]:
     """Return projects where the user has a membership.
 
     Args:
@@ -17,7 +17,7 @@ def project_list(*, user_id: str) -> list[ProjectListItemDTO]:
     ).values("id", "name", "memberships__role")
 
     return [
-        ProjectListItemDTO(
+        ProjectListDTO(
             id=str(membership["id"]),
             name=membership["name"],
             role=membership["memberships__role"],

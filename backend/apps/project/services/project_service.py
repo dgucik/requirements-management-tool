@@ -1,11 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db import transaction
 
-from ..dtos import (
-    ProjectCreateOutputDTO,
-    ProjectMembershipDTO,
-    ProjectUpdateOutputDTO,
-)
+from ..dtos import ProjectCreateDTO, ProjectCreateMembershipDTO, ProjectUpdateDTO
 from ..exceptions import (
     ProjectDeletionForbiddenError,
     ProjectNameRequiredError,
@@ -17,7 +13,7 @@ from ..models import Project, ProjectMembership
 
 
 @transaction.atomic
-def project_create(*, name: str, owner_user_id: str) -> ProjectCreateOutputDTO:
+def project_create(*, name: str, owner_user_id: str) -> ProjectCreateDTO:
     """Create a project and assign its creator the Owner role.
 
     Args:
@@ -52,10 +48,10 @@ def project_create(*, name: str, owner_user_id: str) -> ProjectCreateOutputDTO:
         role=ProjectMembership.Role.OWNER,
     )
 
-    return ProjectCreateOutputDTO(
+    return ProjectCreateDTO(
         id=str(project.id),
         name=project.name,
-        owner_membership=ProjectMembershipDTO(
+        owner_membership=ProjectCreateMembershipDTO(
             id=str(membership.id),
             user_id=str(owner.pk),
             project_id=str(project.id),
@@ -98,7 +94,7 @@ def project_delete(*, project_id: str, user_id: str) -> None:
 @transaction.atomic
 def project_update(
     *, project_id: str, user_id: str, name: str
-) -> ProjectUpdateOutputDTO:
+) -> ProjectUpdateDTO:
     """Update a project's name when requested by its owner.
 
     Args:
@@ -138,4 +134,4 @@ def project_update(
     project.full_clean()
     project.save(update_fields=["name", "updated_at"])
 
-    return ProjectUpdateOutputDTO(id=str(project.id), name=project.name)
+    return ProjectUpdateDTO(id=str(project.id), name=project.name)

@@ -2,8 +2,8 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
-class ProjectMembershipDTO:
-    """Serialized membership data returned by project operations."""
+class ProjectCreateMembershipDTO:
+    """Serialized owner membership data returned by project creation."""
 
     id: str
     user_id: str
@@ -12,16 +12,16 @@ class ProjectMembershipDTO:
 
 
 @dataclass(frozen=True)
-class ProjectCreateOutputDTO:
+class ProjectCreateDTO:
     """Serialized project data returned after project creation."""
 
     id: str
     name: str
-    owner_membership: ProjectMembershipDTO
+    owner_membership: ProjectCreateMembershipDTO
 
 
 @dataclass(frozen=True)
-class ProjectUpdateOutputDTO:
+class ProjectUpdateDTO:
     """Serialized project data returned after a project update."""
 
     id: str
@@ -29,8 +29,8 @@ class ProjectUpdateOutputDTO:
 
 
 @dataclass(frozen=True)
-class ProjectListItemDTO:
-    """Serialized project membership data returned in a project list."""
+class ProjectListDTO:
+    """Serialized project data returned by the project list selector."""
 
     id: str
     name: str
@@ -38,7 +38,7 @@ class ProjectListItemDTO:
 
 
 @dataclass(frozen=True)
-class ProjectMembershipCreateOutputDTO:
+class ProjectMembershipCreateDTO:
     """Serialized membership data returned after membership creation."""
 
     id: str
