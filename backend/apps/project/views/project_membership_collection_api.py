@@ -6,14 +6,26 @@ from rest_framework.views import APIView
 from ..serializers import (
     ProjectMembershipCreateInputSerializer,
     ProjectMembershipCreateOutputSerializer,
+    ProjectMembershipListOutputSerializer,
 )
+from ..selectors import project_membership_list
 from ..services import project_membership_create
 
 
 class ProjectMembershipCollectionApi(APIView):
-    """Create memberships in a project."""
+    """List and create memberships in a project."""
 
     permission_classes = [IsAuthenticated]
+
+    def get(self, request, project_id):
+        """Return memberships assigned to the project."""
+
+        memberships = project_membership_list(project_id=str(project_id))
+        output_serializer = ProjectMembershipListOutputSerializer(
+            memberships,
+            many=True,
+        )
+        return Response(output_serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request, project_id):
         """Validate membership data and delegate creation to the service."""

@@ -88,3 +88,12 @@ class ProjectMembershipUpdateOutputSerializer(serializers.Serializer):
     user_id = serializers.CharField()
     project_id = serializers.UUIDField()
     role = serializers.CharField()
+
+
+class ProjectMembershipListOutputSerializer(serializers.Serializer):
+    """Serialize memberships assigned to a project."""
+
+    id = serializers.UUIDField()
+    user_id = serializers.CharField()
+    project_id = serializers.UUIDField()
+    role = serializers.CharField()

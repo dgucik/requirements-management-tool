@@ -55,3 +55,13 @@ class ProjectMembershipUpdateDTO:
     user_id: str
     project_id: str
     role: str
+
+
+@dataclass(frozen=True)
+class ProjectMembershipListDTO:
+    """Serialized project membership data returned by the membership selector."""
+
+    id: str
+    user_id: str
+    project_id: str
+    role: str

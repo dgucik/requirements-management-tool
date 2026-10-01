@@ -15,7 +15,7 @@ urlpatterns = [
     path(
         "<uuid:project_id>/memberships/",
         ProjectMembershipCollectionApi.as_view(),
-        name="project-membership-create",
+        name="project-membership-collection",
     ),
     path(
         "<uuid:project_id>/memberships/<uuid:membership_id>/",
