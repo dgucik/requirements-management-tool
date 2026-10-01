@@ -97,3 +97,13 @@ repository-specific constraints below taking precedence.
   importing from `core` should use `from core.exceptions import ApplicationError`.
 - Do not use absolute imports for same-module dependencies or relative imports to cross module
   boundaries.
+
+## Module size and structure
+
+- Keep modules focused on one responsibility.
+- When a file starts to grow or contains more than one substantial class, split it into focused
+  modules, especially for views, services, selectors, models, and serializers.
+- Group related modules in a package with an `__init__.py` that exports the public classes or
+  functions.
+- Name split view modules after the resource and operation, for example
+  `project_collection_api.py` or `project_detail_api.py`.

@@ -1,5 +1,7 @@
 from rest_framework import serializers
 
+from .models import ProjectMembership
+
 
 class ProjectCreateInputSerializer(serializers.Serializer):
     """Validate input required to create a project."""
@@ -42,4 +44,26 @@ class ProjectListOutputSerializer(serializers.Serializer):
 
     id = serializers.UUIDField()
     name = serializers.CharField()
+    role = serializers.CharField()
+
+
+class ProjectMembershipCreateInputSerializer(serializers.Serializer):
+    """Validate input required to add a member to a project."""
+
+    user_id = serializers.CharField()
+    role = serializers.ChoiceField(
+        choices=[
+            ProjectMembership.Role.VIEWER,
+            ProjectMembership.Role.EDITOR,
+            ProjectMembership.Role.MODERATOR,
+        ]
+    )
+
+
+class ProjectMembershipCreateOutputSerializer(serializers.Serializer):
+    """Serialize a membership created for a project."""
+
+    id = serializers.UUIDField()
+    user_id = serializers.CharField()
+    project_id = serializers.UUIDField()
     role = serializers.CharField()

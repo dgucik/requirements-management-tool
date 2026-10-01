@@ -23,3 +23,15 @@ class ProjectDeletionForbiddenError(PermissionDeniedError):
 
 class ProjectUpdateForbiddenError(PermissionDeniedError):
     """Raised when a non-owner tries to update a project."""
+
+
+class ProjectMembershipManagementForbiddenError(PermissionDeniedError):
+    """Raised when a user cannot manage project memberships."""
+
+
+class ProjectMembershipOwnerRoleForbiddenError(BusinessRuleError):
+    """Raised when membership creation attempts to assign the Owner role."""
+
+
+class ProjectMembershipAlreadyExistsError(BusinessRuleError):
+    """Raised when a user already belongs to a project."""

@@ -35,3 +35,13 @@ class ProjectListItemDTO:
     id: str
     name: str
     role: str
+
+
+@dataclass(frozen=True)
+class ProjectMembershipCreateOutputDTO:
+    """Serialized membership data returned after membership creation."""
+
+    id: str
+    user_id: str
+    project_id: str
+    role: str
