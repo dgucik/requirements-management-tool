@@ -11,23 +11,23 @@ repository-specific constraints below taking precedence.
   trigger side effects.
 - Services should be typed, use keyword-only arguments, and follow the `<entity>_<action>` naming
   convention, for example `project_create` or `membership_update`.
-- Services must not import anything from `selectors`.
+- Services may import and call selectors when they need read-side data for a write operation.
 
 ## Selectors
 
 - Selectors are the read/query path.
 - A selector may query the database and compose read results, but must not mutate data or trigger
   side effects.
-- Selectors must not import anything from `services`.
+- Selectors must not import or call services, directly or indirectly.
 - Selectors should be typed, use keyword-only arguments, and follow the `<entity>_<action>` naming
   convention, for example `project_get` or `membership_list`.
 
 ## Boundary rules
 
-- Services and selectors are independent paths: neither may import the other, directly or
-  indirectly.
-- Do not solve a shared dependency by creating a service-selector cycle. Move genuinely shared,
-  side-effect-free logic to a neutral module such as `domain.py` or `utils.py`.
+- Services and selectors have an intentionally one-way dependency: services may depend on
+  selectors, but selectors must never depend on services.
+- Do not create a service-selector cycle. Move genuinely shared, side-effect-free logic to a
+  neutral module such as `domain.py` or `utils.py`.
 
 ## Views and APIs
 
@@ -45,18 +45,30 @@ repository-specific constraints below taking precedence.
 
 ## Function inputs and outputs
 
-- Every service and selector may accept and return only JSON-serializable data.
-- Use primitives, `None`, lists, and dictionaries composed recursively from those values. Convert
-  UUIDs, dates, datetimes, decimals, and other framework-specific values before crossing the
-  boundary (for example, UUIDs and datetimes to strings).
+- Every service and selector may accept only serializable data and may return only serializable
+  data or a dedicated serializable DTO dataclass.
+- DTO dataclasses must contain only primitives, `None`, lists, dictionaries, or nested DTO
+  dataclasses composed recursively from those values. Convert UUIDs, dates, datetimes, decimals,
+  and other framework-specific values before crossing the boundary (for example, UUIDs and
+  datetimes to strings).
+- Define service/selector DTO dataclasses in the app's `dtos.py` module. DTOs are the only allowed
+  structured return type for services and selectors.
 - Pass identifiers and plain values, not Django model instances, QuerySets, managers, requests,
   serializers, uploaded files, or other framework objects.
 - Never return Django models, QuerySets, model managers, serializers, HTTP responses, or other
   framework objects.
 - A service may use Django models internally for persistence, but it must return a serialized
   result. A selector may use the ORM internally for reads, but it must return a serialized result.
-- Prefer explicit typed result shapes such as `dict[str, object]` or `list[dict[str, object]]` and
-  document their fields.
+- Prefer explicit typed DTO result shapes and document their fields.
+
+## Exceptions
+
+- Services and selectors must not raise Django, DRF, or serializer validation exceptions.
+- Define app-specific exceptions in the relevant app's `exceptions.py` module and make them
+  inherit from the shared base exceptions in `core/exceptions.py`.
+- Do not create app-specific catch-all base exceptions such as `ProjectError`; use the shared
+  exception hierarchy instead.
+- Views/API layers translate business exceptions into HTTP responses.
 
 ## Testing
 

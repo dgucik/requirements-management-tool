@@ -1,0 +1,45 @@
+from django.contrib.auth import get_user_model
+from django.db import transaction
+
+from apps.project.dtos import ProjectCreateOutputDTO, ProjectMembershipDTO
+from apps.project.exceptions import (
+    ProjectNameRequiredError,
+    ProjectOwnerNotFoundError,
+)
+from apps.project.models import Project, ProjectMembership
+
+
+@transaction.atomic
+def project_create(*, name: str, owner_user_id: str) -> ProjectCreateOutputDTO:
+    """Create a project and assign its creator the Owner role."""
+
+    normalized_name = name.strip()
+    if not normalized_name:
+        raise ProjectNameRequiredError("Project name cannot be empty.")
+
+    user_model = get_user_model()
+    try:
+        owner = user_model.objects.get(pk=owner_user_id)
+    except user_model.DoesNotExist as exc:
+        raise ProjectOwnerNotFoundError("Project owner does not exist.") from exc
+
+    project = Project(name=normalized_name)
+    project.full_clean()
+    project.save()
+
+    membership = ProjectMembership.objects.create(
+        user=owner,
+        project=project,
+        role=ProjectMembership.Role.OWNER,
+    )
+
+    return ProjectCreateOutputDTO(
+        id=str(project.id),
+        name=project.name,
+        owner_membership=ProjectMembershipDTO(
+            id=str(membership.id),
+            user_id=str(owner.pk),
+            project_id=str(project.id),
+            role=membership.role,
+        ),
+    )
