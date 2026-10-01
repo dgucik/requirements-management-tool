@@ -7,7 +7,7 @@ from apps.project.serializers import (
     ProjectCreateInputSerializer,
     ProjectCreateOutputSerializer,
 )
-from apps.project.services import project_create
+from apps.project.services import project_create, project_delete
 
 
 class ProjectCreateApi(APIView):
@@ -28,3 +28,18 @@ class ProjectCreateApi(APIView):
 
         output_serializer = ProjectCreateOutputSerializer(project)
         return Response(output_serializer.data, status=status.HTTP_201_CREATED)
+
+
+class ProjectDeleteApi(APIView):
+    """Delete a project when requested by its owner."""
+
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, project_id):
+        """Delegate project deletion to the project service."""
+
+        project_delete(
+            project_id=str(project_id),
+            user_id=str(request.user.pk),
+        )
+        return Response(status=status.HTTP_204_NO_CONTENT)

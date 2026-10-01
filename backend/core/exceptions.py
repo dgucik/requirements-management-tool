@@ -13,3 +13,7 @@ class BusinessRuleError(ApplicationError):
 
 class EntityNotFoundError(ApplicationError):
     """Base class for expected missing-entity errors."""
+
+
+class PermissionDeniedError(ApplicationError):
+    """Base class for expected authorization failures."""

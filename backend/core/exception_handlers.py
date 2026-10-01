@@ -9,6 +9,7 @@ from core.exceptions import (
     ApplicationError,
     BusinessRuleError,
     EntityNotFoundError,
+    PermissionDeniedError,
 )
 
 
@@ -35,6 +36,8 @@ def api_exception_handler(exc, context):
     if response is None:
         if isinstance(exc, EntityNotFoundError):
             status_code = 404
+        elif isinstance(exc, PermissionDeniedError):
+            status_code = 403
         elif isinstance(exc, BusinessRuleError):
             status_code = 400
         elif isinstance(exc, ApplicationError):

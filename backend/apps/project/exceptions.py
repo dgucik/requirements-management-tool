@@ -1,4 +1,8 @@
-from core.exceptions import BusinessRuleError, EntityNotFoundError
+from core.exceptions import (
+    BusinessRuleError,
+    EntityNotFoundError,
+    PermissionDeniedError,
+)
 
 
 class ProjectNameRequiredError(BusinessRuleError):
@@ -7,3 +11,11 @@ class ProjectNameRequiredError(BusinessRuleError):
 
 class UserNotFoundError(EntityNotFoundError):
     """Raised when a referenced user does not exist."""
+
+
+class ProjectNotFoundError(EntityNotFoundError):
+    """Raised when a referenced project does not exist."""
+
+
+class ProjectDeletionForbiddenError(PermissionDeniedError):
+    """Raised when a non-owner tries to delete a project."""

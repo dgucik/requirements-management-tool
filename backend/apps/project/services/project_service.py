@@ -3,7 +3,9 @@ from django.db import transaction
 
 from apps.project.dtos import ProjectCreateOutputDTO, ProjectMembershipDTO
 from apps.project.exceptions import (
+    ProjectDeletionForbiddenError,
     ProjectNameRequiredError,
+    ProjectNotFoundError,
     UserNotFoundError,
 )
 from apps.project.models import Project, ProjectMembership
@@ -55,3 +57,34 @@ def project_create(*, name: str, owner_user_id: str) -> ProjectCreateOutputDTO:
             role=membership.role,
         ),
     )
+
+
+@transaction.atomic
+def project_delete(*, project_id: str, user_id: str) -> None:
+    """Delete a project when the requesting user is its owner.
+
+    Args:
+        project_id: Identifier of the project to delete.
+        user_id: Identifier of the user requesting deletion.
+
+    Raises:
+        ProjectNotFoundError: If the project does not exist.
+        ProjectDeletionForbiddenError: If the user is not the project owner.
+    """
+
+    try:
+        project = Project.objects.get(pk=project_id)
+    except Project.DoesNotExist as exc:
+        raise ProjectNotFoundError("Project does not exist.") from exc
+
+    is_owner = ProjectMembership.objects.filter(
+        project=project,
+        user_id=user_id,
+        role=ProjectMembership.Role.OWNER,
+    ).exists()
+    if not is_owner:
+        raise ProjectDeletionForbiddenError(
+            "Only the project owner can delete the project."
+        )
+
+    project.delete()

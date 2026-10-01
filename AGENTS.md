@@ -69,7 +69,8 @@ repository-specific constraints below taking precedence.
 - Do not create app-specific catch-all base exceptions such as `ProjectError`; use the shared
   exception hierarchy instead.
 - The central exception handler maps `BusinessRuleError` to HTTP 400 and `EntityNotFoundError` to
-  HTTP 404. Exception classes must not contain HTTP status codes.
+  HTTP 404, and `PermissionDeniedError` to HTTP 403. Exception classes must not contain HTTP
+  status codes.
 - A central DRF exception handler translates business exceptions into HTTP responses; views should
   not catch and remap domain exceptions themselves.
 
