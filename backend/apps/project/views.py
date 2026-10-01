@@ -11,9 +11,13 @@ from apps.project.services import project_create
 
 
 class ProjectCreateApi(APIView):
+    """Create a project for the authenticated user."""
+
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        """Validate the request and delegate project creation to the service."""
+
         input_serializer = ProjectCreateInputSerializer(data=request.data)
         input_serializer.is_valid(raise_exception=True)
 

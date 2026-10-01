@@ -79,3 +79,10 @@ repository-specific constraints below taking precedence.
 - Service tests should verify writes, business rules, transactions, and side effects.
 - Selector tests should verify filtering, visibility, ordering, and serialized output.
 - Tests must also verify that service and selector results contain no Django model or ORM objects.
+
+## Documentation
+
+- Add concise, meaningful Google-style docstrings to every production class and function.
+- Include `Args`, `Returns`, and `Raises` sections when they add useful information; do not add
+  empty or redundant sections.
+- Test functions do not require docstrings.

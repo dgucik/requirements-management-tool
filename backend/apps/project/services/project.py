@@ -11,7 +11,19 @@ from apps.project.models import Project, ProjectMembership
 
 @transaction.atomic
 def project_create(*, name: str, owner_user_id: str) -> ProjectCreateOutputDTO:
-    """Create a project and assign its creator the Owner role."""
+    """Create a project and assign its creator the Owner role.
+
+    Args:
+        name: Display name of the project.
+        owner_user_id: Identifier of the user creating the project.
+
+    Returns:
+        Serialized project data, including the owner's membership.
+
+    Raises:
+        ProjectNameRequiredError: If the name is empty after trimming.
+        UserNotFoundError: If the owner user does not exist.
+    """
 
     normalized_name = name.strip()
     if not normalized_name:

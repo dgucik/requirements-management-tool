@@ -13,7 +13,15 @@ from core.exceptions import (
 
 
 def api_exception_handler(exc, context):
-    """Return consistent API errors while preserving DRF's default handling."""
+    """Translate application errors and normalize DRF error responses.
+
+    Args:
+        exc: Exception raised while handling the request.
+        context: DRF context containing the view and request.
+
+    Returns:
+        A normalized DRF response or ``None`` for unhandled exceptions.
+    """
 
     if isinstance(exc, DjangoValidationError):
         exc = exceptions.ValidationError(as_serializer_error(exc))

@@ -6,7 +6,11 @@ from .project import Project
 
 
 class ProjectMembership(BaseModel):
+    """Associate a user with a project and define the user's project role."""
+
     class Role(models.TextChoices):
+        """Roles available to project members."""
+
         VIEWER = "Viewer", "Viewer"
         EDITOR = "Editor", "Editor"
         MODERATOR = "Moderator", "Moderator"
@@ -35,4 +39,6 @@ class ProjectMembership(BaseModel):
         ]
 
     def __str__(self):
+        """Return a human-readable membership label."""
+
         return f"{self.user} - {self.project} ({self.role})"

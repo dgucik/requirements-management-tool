@@ -1,4 +1,6 @@
 def main():
+    """Print the backend placeholder message."""
+
     print("Hello from backend!")
 
 

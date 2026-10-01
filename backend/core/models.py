@@ -4,7 +4,7 @@ from django.db import models
 
 
 class BaseModel(models.Model):
-    """Abstract base model with common record timestamps."""
+    """Abstract model providing UUID identity and common record timestamps."""
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
