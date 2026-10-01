@@ -19,3 +19,7 @@ class ProjectNotFoundError(EntityNotFoundError):
 
 class ProjectDeletionForbiddenError(PermissionDeniedError):
     """Raised when a non-owner tries to delete a project."""
+
+
+class ProjectUpdateForbiddenError(PermissionDeniedError):
+    """Raised when a non-owner tries to update a project."""

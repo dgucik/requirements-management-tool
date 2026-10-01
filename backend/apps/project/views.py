@@ -6,8 +6,10 @@ from rest_framework.views import APIView
 from apps.project.serializers import (
     ProjectCreateInputSerializer,
     ProjectCreateOutputSerializer,
+    ProjectUpdateInputSerializer,
+    ProjectUpdateOutputSerializer,
 )
-from apps.project.services import project_create, project_delete
+from apps.project.services import project_create, project_delete, project_update
 
 
 class ProjectCreateApi(APIView):
@@ -30,8 +32,8 @@ class ProjectCreateApi(APIView):
         return Response(output_serializer.data, status=status.HTTP_201_CREATED)
 
 
-class ProjectDeleteApi(APIView):
-    """Delete a project when requested by its owner."""
+class ProjectDetailApi(APIView):
+    """Update or delete a project when requested by its owner."""
 
     permission_classes = [IsAuthenticated]
 
@@ -43,3 +45,17 @@ class ProjectDeleteApi(APIView):
             user_id=str(request.user.pk),
         )
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def patch(self, request, project_id):
+        """Validate the request and delegate the project update to the service."""
+
+        input_serializer = ProjectUpdateInputSerializer(data=request.data)
+        input_serializer.is_valid(raise_exception=True)
+
+        project = project_update(
+            project_id=str(project_id),
+            user_id=str(request.user.pk),
+            name=input_serializer.validated_data["name"],
+        )
+        output_serializer = ProjectUpdateOutputSerializer(project)
+        return Response(output_serializer.data, status=status.HTTP_200_OK)

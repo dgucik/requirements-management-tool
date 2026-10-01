@@ -18,3 +18,11 @@ class ProjectCreateOutputDTO:
     id: str
     name: str
     owner_membership: ProjectMembershipDTO
+
+
+@dataclass(frozen=True)
+class ProjectUpdateOutputDTO:
+    """Serialized project data returned after a project update."""
+
+    id: str
+    name: str
