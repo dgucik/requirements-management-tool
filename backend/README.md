@@ -48,6 +48,31 @@ Authorization: Bearer <access-token>
 
 Refresh an expired access token with `POST /api/auth/token/refresh/` and the refresh token.
 
+## Local development data
+
+After applying migrations, create sample data with:
+
+```bash
+uv run python manage.py seed_dev_data
+```
+
+The command is idempotent and creates or updates:
+
+- an admin user: `admin` / `admin12345`
+- a regular user: `demo` / `demo12345`
+- two projects with owner, editor, and viewer memberships
+
+Override the default local passwords when needed:
+
+```bash
+uv run python manage.py seed_dev_data \
+  --admin-password 'change-admin-password' \
+  --demo-password 'change-demo-password'
+```
+
+The seeded `admin` account has Django admin permissions and can sign in at
+<http://127.0.0.1:8000/admin/>. These credentials are intended for local development only.
+
 ## Tests
 
 Install the project and development dependencies, then run:
