@@ -16,6 +16,19 @@ uv run python manage.py runserver
 The server runs at <http://127.0.0.1:8000/>. The admin site is available at
 <http://127.0.0.1:8000/admin/>.
 
+## API documentation
+
+The API documentation is generated from the DRF views and serializers with
+[`drf-spectacular`](https://drf-spectacular.readthedocs.io/). The available endpoints are:
+
+- Swagger UI: <http://127.0.0.1:8000/api/docs/>
+- ReDoc: <http://127.0.0.1:8000/api/redoc/>
+- OpenAPI schema: <http://127.0.0.1:8000/api/schema/>
+
+The schema endpoint returns the OpenAPI document and can be used to generate API clients or
+integrate the API with other tools. Protected endpoints require JWT authentication. In Swagger UI,
+use the **Authorize** button and enter `Bearer <access-token>`.
+
 ## Authentication
 
 The API uses JWT authentication. Obtain a token pair with:

@@ -2,6 +2,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from drf_spectacular.utils import extend_schema
 
 from ..serializers import (
     ProjectMembershipUpdateInputSerializer,
@@ -15,6 +16,11 @@ class ProjectMembershipDetailApi(APIView):
 
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        request=ProjectMembershipUpdateInputSerializer,
+        responses=ProjectMembershipUpdateOutputSerializer,
+        summary="Update a project membership",
+    )
     def patch(self, request, project_id, membership_id):
         """Validate membership changes and delegate them to the service."""
 
@@ -30,6 +36,7 @@ class ProjectMembershipDetailApi(APIView):
         output_serializer = ProjectMembershipUpdateOutputSerializer(membership)
         return Response(output_serializer.data, status=status.HTTP_200_OK)
 
+    @extend_schema(responses={204: None}, summary="Remove a project member")
     def delete(self, request, project_id, membership_id):
         """Delegate membership deletion to the service."""
 

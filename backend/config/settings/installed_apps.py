@@ -8,4 +8,5 @@ INSTALLED_APPS = [
     "core",
     "apps.project",
     "rest_framework",
+    "drf_spectacular",
 ]

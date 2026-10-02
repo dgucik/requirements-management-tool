@@ -2,6 +2,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from drf_spectacular.utils import extend_schema
 
 from ..selectors import project_list
 from ..serializers import (
@@ -17,6 +18,10 @@ class ProjectCollectionApi(APIView):
 
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        responses=ProjectListOutputSerializer(many=True),
+        summary="List projects",
+    )
     def get(self, request):
         """Return projects where the authenticated user has a membership."""
 
@@ -24,6 +29,11 @@ class ProjectCollectionApi(APIView):
         output_serializer = ProjectListOutputSerializer(projects, many=True)
         return Response(output_serializer.data, status=status.HTTP_200_OK)
 
+    @extend_schema(
+        request=ProjectCreateInputSerializer,
+        responses=ProjectCreateOutputSerializer,
+        summary="Create a project",
+    )
     def post(self, request):
         """Validate the request and delegate project creation to the service."""
 
