@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db import transaction
 
+from ..identifiers import project_code_generate
 from ..dtos import ProjectCreateDTO, ProjectCreateMembershipDTO, ProjectUpdateDTO
 from ..exceptions import (
     ProjectDeletionForbiddenError,
@@ -38,7 +39,13 @@ def project_create(*, name: str, owner_user_id: str) -> ProjectCreateDTO:
     except user_model.DoesNotExist as exc:
         raise UserNotFoundError("User does not exist.") from exc
 
-    project = Project(name=normalized_name)
+    project = Project(
+        name=normalized_name,
+        code=project_code_generate(
+            name=normalized_name,
+            existing_codes=Project.objects.values_list("code", flat=True),
+        ),
+    )
     project.full_clean()
     project.save()
 
@@ -51,6 +58,7 @@ def project_create(*, name: str, owner_user_id: str) -> ProjectCreateDTO:
     return ProjectCreateDTO(
         id=str(project.id),
         name=project.name,
+        code=project.code,
         owner_membership=ProjectCreateMembershipDTO(
             id=str(membership.id),
             user_id=str(owner.pk),
@@ -134,4 +142,4 @@ def project_update(
     project.full_clean()
     project.save(update_fields=["name", "updated_at"])
 
-    return ProjectUpdateDTO(id=str(project.id), name=project.name)
+    return ProjectUpdateDTO(id=str(project.id), name=project.name, code=project.code)

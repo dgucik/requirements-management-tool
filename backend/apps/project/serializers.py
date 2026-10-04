@@ -23,6 +23,7 @@ class ProjectCreateOutputSerializer(serializers.Serializer):
 
     id = serializers.UUIDField()
     name = serializers.CharField()
+    code = serializers.SlugField(max_length=10)
     owner_membership = ProjectMembershipOutputSerializer()
 
 
@@ -37,6 +38,7 @@ class ProjectUpdateOutputSerializer(serializers.Serializer):
 
     id = serializers.UUIDField()
     name = serializers.CharField()
+    code = serializers.SlugField(max_length=10)
 
 
 class ProjectListOutputSerializer(serializers.Serializer):
@@ -44,6 +46,7 @@ class ProjectListOutputSerializer(serializers.Serializer):
 
     id = serializers.UUIDField()
     name = serializers.CharField()
+    code = serializers.SlugField(max_length=10)
     role = serializers.CharField()
 
 

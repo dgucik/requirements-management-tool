@@ -13,7 +13,7 @@ from ...services import project_update
 def test_project_update_owner_changes_name():
     # Arrange
     owner = get_user_model().objects.create_user(username="project-owner")
-    project = Project.objects.create(name="Old name")
+    project = Project.objects.create(name="Old name", code="old-name")
     ProjectMembership.objects.create(
         user=owner,
         project=project,
@@ -39,7 +39,7 @@ def test_project_update_non_owner_is_forbidden():
     # Arrange
     owner = get_user_model().objects.create_user(username="project-owner")
     member = get_user_model().objects.create_user(username="project-member")
-    project = Project.objects.create(name="Old name")
+    project = Project.objects.create(name="Old name", code="old-name")
     ProjectMembership.objects.create(
         user=owner,
         project=project,
@@ -68,7 +68,7 @@ def test_project_update_non_owner_is_forbidden():
 def test_project_update_name_is_empty():
     # Arrange
     owner = get_user_model().objects.create_user(username="project-owner")
-    project = Project.objects.create(name="Old name")
+    project = Project.objects.create(name="Old name", code="old-name")
     ProjectMembership.objects.create(
         user=owner,
         project=project,

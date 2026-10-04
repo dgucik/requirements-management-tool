@@ -12,7 +12,7 @@ def test_project_membership_list_returns_project_memberships_with_roles():
     user_model = get_user_model()
     first_user = user_model.objects.create_user(username="first-member")
     second_user = user_model.objects.create_user(username="second-member")
-    project = Project.objects.create(name="Requirements Tool")
+    project = Project.objects.create(name="Requirements Tool", code="requirements-tool")
     first_membership = ProjectMembership.objects.create(
         user=first_user,
         project=project,

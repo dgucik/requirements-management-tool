@@ -9,8 +9,12 @@ from ...selectors import project_list
 def test_project_list_returns_projects_with_user_membership():
     # Arrange
     user = get_user_model().objects.create_user(username="project-member")
-    included_project = Project.objects.create(name="Included project")
-    excluded_project = Project.objects.create(name="Excluded project")
+    included_project = Project.objects.create(
+        name="Included project", code="included-project"
+    )
+    excluded_project = Project.objects.create(
+        name="Excluded project", code="excluded-project"
+    )
     ProjectMembership.objects.create(
         user=user,
         project=included_project,

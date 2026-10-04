@@ -17,6 +17,7 @@ class ProjectCreateDTO:
 
     id: str
     name: str
+    code: str
     owner_membership: ProjectCreateMembershipDTO
 
 
@@ -26,6 +27,7 @@ class ProjectUpdateDTO:
 
     id: str
     name: str
+    code: str
 
 
 @dataclass(frozen=True)
@@ -34,6 +36,7 @@ class ProjectListDTO:
 
     id: str
     name: str
+    code: str
     role: str
 
 

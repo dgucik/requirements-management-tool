@@ -15,7 +15,7 @@ from ...services import project_delete
 def test_project_delete_owner_deletes_project_and_memberships():
     # Arrange
     owner = get_user_model().objects.create_user(username="project-owner")
-    project = Project.objects.create(name="Requirements Tool")
+    project = Project.objects.create(name="Requirements Tool", code="requirements-tool")
     ProjectMembership.objects.create(
         user=owner,
         project=project,
@@ -35,7 +35,7 @@ def test_project_delete_non_owner_is_forbidden():
     # Arrange
     owner = get_user_model().objects.create_user(username="project-owner")
     member = get_user_model().objects.create_user(username="project-member")
-    project = Project.objects.create(name="Requirements Tool")
+    project = Project.objects.create(name="Requirements Tool", code="requirements-tool")
     ProjectMembership.objects.create(
         user=owner,
         project=project,

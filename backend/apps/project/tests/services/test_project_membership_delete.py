@@ -12,7 +12,7 @@ def test_project_membership_delete_owner_deletes_member():
     user_model = get_user_model()
     owner = user_model.objects.create_user(username="project-owner")
     member = user_model.objects.create_user(username="project-member")
-    project = Project.objects.create(name="Requirements Tool")
+    project = Project.objects.create(name="Requirements Tool", code="requirements-tool")
     ProjectMembership.objects.create(
         user=owner,
         project=project,
@@ -41,7 +41,7 @@ def test_project_membership_delete_moderator_deletes_member():
     user_model = get_user_model()
     moderator = user_model.objects.create_user(username="project-moderator")
     member = user_model.objects.create_user(username="project-member")
-    project = Project.objects.create(name="Requirements Tool")
+    project = Project.objects.create(name="Requirements Tool", code="requirements-tool")
     ProjectMembership.objects.create(
         user=moderator,
         project=project,
@@ -70,7 +70,7 @@ def test_project_membership_delete_moderator_cannot_delete_owner():
     user_model = get_user_model()
     moderator = user_model.objects.create_user(username="project-moderator")
     owner = user_model.objects.create_user(username="project-owner")
-    project = Project.objects.create(name="Requirements Tool")
+    project = Project.objects.create(name="Requirements Tool", code="requirements-tool")
     ProjectMembership.objects.create(
         user=moderator,
         project=project,

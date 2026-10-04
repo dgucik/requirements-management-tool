@@ -2,7 +2,8 @@ from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
-from ...models import Project, ProjectMembership
+from apps.project.identifiers import project_code_generate
+from apps.project.models import Project, ProjectMembership
 
 
 class Command(BaseCommand):
@@ -51,7 +52,15 @@ class Command(BaseCommand):
             ("Demo Project", ProjectMembership.Role.VIEWER),
         ]
         for project_name, demo_role in projects:
-            project, _ = Project.objects.get_or_create(name=project_name)
+            project, _ = Project.objects.get_or_create(
+                name=project_name,
+                defaults={
+                    "code": project_code_generate(
+                        name=project_name,
+                        existing_codes=Project.objects.values_list("code", flat=True),
+                    )
+                },
+            )
             ProjectMembership.objects.update_or_create(
                 project=project,
                 user=admin_user,

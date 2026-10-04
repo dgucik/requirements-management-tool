@@ -7,7 +7,7 @@ from apps.project.models import Project
 class Feature(BaseModel):
     """Group requirements under a project feature."""
 
-    key = models.CharField(max_length=100, unique=True)
+    key = models.SlugField(max_length=255, unique=True)
     title = models.CharField(max_length=255)
     project = models.ForeignKey(
         Project,

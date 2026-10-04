@@ -14,12 +14,13 @@ def project_list(*, user_id: str) -> list[ProjectListDTO]:
 
     memberships = Project.objects.filter(
         memberships__user_id=user_id,
-    ).values("id", "name", "memberships__role")
+    ).values("id", "name", "code", "memberships__role")
 
     return [
         ProjectListDTO(
             id=str(membership["id"]),
             name=membership["name"],
+            code=membership["code"],
             role=membership["memberships__role"],
         )
         for membership in memberships

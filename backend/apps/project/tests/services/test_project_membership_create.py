@@ -15,7 +15,7 @@ def test_project_membership_create_owner_adds_member():
     user_model = get_user_model()
     owner = user_model.objects.create_user(username="project-owner")
     new_member = user_model.objects.create_user(username="new-member")
-    project = Project.objects.create(name="Requirements Tool")
+    project = Project.objects.create(name="Requirements Tool", code="requirements-tool")
     ProjectMembership.objects.create(
         user=owner,
         project=project,
@@ -43,7 +43,7 @@ def test_project_membership_create_moderator_adds_member():
     user_model = get_user_model()
     moderator = user_model.objects.create_user(username="project-moderator")
     new_member = user_model.objects.create_user(username="new-member")
-    project = Project.objects.create(name="Requirements Tool")
+    project = Project.objects.create(name="Requirements Tool", code="requirements-tool")
     ProjectMembership.objects.create(
         user=moderator,
         project=project,
@@ -73,7 +73,7 @@ def test_project_membership_create_non_manager_is_forbidden():
     user_model = get_user_model()
     member = user_model.objects.create_user(username="project-member")
     new_member = user_model.objects.create_user(username="new-member")
-    project = Project.objects.create(name="Requirements Tool")
+    project = Project.objects.create(name="Requirements Tool", code="requirements-tool")
     ProjectMembership.objects.create(
         user=member,
         project=project,
@@ -99,7 +99,7 @@ def test_project_membership_create_owner_role_is_forbidden():
     user_model = get_user_model()
     owner = user_model.objects.create_user(username="project-owner")
     new_member = user_model.objects.create_user(username="new-member")
-    project = Project.objects.create(name="Requirements Tool")
+    project = Project.objects.create(name="Requirements Tool", code="requirements-tool")
     ProjectMembership.objects.create(
         user=owner,
         project=project,

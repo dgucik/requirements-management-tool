@@ -27,7 +27,7 @@ repository-specific constraints below taking precedence.
 - Services and selectors have an intentionally one-way dependency: services may depend on
   selectors, but selectors must never depend on services.
 - Do not create a service-selector cycle. Move genuinely shared, side-effect-free logic to a
-  neutral module such as `domain.py` or `utils.py`.
+  neutral module such as `identifiers.py` or `utils.py`.
 
 ## Views and APIs
 
@@ -91,6 +91,13 @@ repository-specific constraints below taking precedence.
 - Include `Args`, `Returns`, and `Raises` sections when they add useful information; do not add
   empty or redundant sections.
 - Test functions do not require docstrings.
+
+## Models and persistence
+
+- Models define fields, relationships, constraints, and representation only. Do not override
+  `save()` to generate identifiers, slugs, codes, or other business data.
+- Generate project codes and other derived values in services or dedicated identifier modules before
+  model validation and persistence.
 
 ## Import conventions
 
