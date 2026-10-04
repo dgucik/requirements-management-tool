@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import include, path
 
 from .views import (
     ProjectCollectionApi,
@@ -12,6 +12,10 @@ app_name = "project"
 
 urlpatterns = [
     path("", ProjectCollectionApi.as_view(), name="project-collection"),
+    path(
+        "<uuid:project_id>/requirements/",
+        include("apps.requirement.urls"),
+    ),
     path(
         "<uuid:project_id>/memberships/",
         ProjectMembershipCollectionApi.as_view(),

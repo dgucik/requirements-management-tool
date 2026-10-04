@@ -1,5 +1,5 @@
 from ..dtos import ProjectListDTO
-from ..models import Project
+from ..models import Project, ProjectMembership
 
 
 def project_list(*, user_id: str) -> list[ProjectListDTO]:
@@ -25,3 +25,25 @@ def project_list(*, user_id: str) -> list[ProjectListDTO]:
         )
         for membership in memberships
     ]
+
+
+def project_user_can_create_requirement(*, project_id: str, user_id: str) -> bool:
+    """Check whether a user may create requirements in a project.
+
+    Args:
+        project_id: Identifier of the project to check.
+        user_id: Identifier of the user whose permission is checked.
+
+    Returns:
+        True for project editors, moderators, and owners; otherwise False.
+    """
+
+    return ProjectMembership.objects.filter(
+        project_id=project_id,
+        user_id=user_id,
+        role__in=[
+            ProjectMembership.Role.EDITOR,
+            ProjectMembership.Role.MODERATOR,
+            ProjectMembership.Role.OWNER,
+        ],
+    ).exists()
