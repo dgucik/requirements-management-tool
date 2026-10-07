@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 from core.models import BaseModel
 
@@ -23,6 +24,22 @@ class RequirementVersion(BaseModel):
         on_delete=models.CASCADE,
         related_name="versions",
         db_column="requirement_id",
+    )
+    based_on_version = models.ForeignKey(
+        "self",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="derived_versions",
+        db_column="based_on_version_id",
+    )
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="created_requirement_versions",
+        db_column="created_by_id",
     )
     title = models.CharField(max_length=255)
     description = models.TextField()
@@ -55,6 +72,14 @@ class RequirementVersion(BaseModel):
         db_column="feature_id",
     )
     is_deleted = models.BooleanField(default=False)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["requirement", "version"],
+                name="unique_requirement_version_number",
+            ),
+        ]
 
     def __str__(self):
         """Return a readable requirement version label."""
