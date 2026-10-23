@@ -14,7 +14,11 @@ class RequirementVersionUpdateForbiddenError(PermissionDeniedError):
 
 
 class RequirementVersionNotEditableError(BusinessRuleError):
-    """Raised when a requirement version is not a draft and cannot be edited."""
+    """Raised when a requirement version cannot be edited by the requesting user."""
+
+
+class RequirementVersionNotApprovedError(BusinessRuleError):
+    """Raised when a new version is based on a version that is not approved."""
 
 
 class RequirementFeatureNotFoundError(EntityNotFoundError):

@@ -99,17 +99,19 @@ def requirement_list(*, project_id: str) -> list[RequirementListDTO]:
 
 
 def requirement_version_can_be_edited(
-    *, project_id: str, requirement_id: str, version_id: str
+    *, project_id: str, requirement_id: str, version_id: str, user_id: str
 ) -> bool:
-    """Check whether an active requirement version is a draft in the project.
+    """Check whether a user can edit an active draft requirement version.
 
     Args:
         project_id: Identifier of the project containing the version.
         requirement_id: Identifier of the requirement containing the version.
         version_id: Identifier of the version to check.
+        user_id: Identifier of the user requesting the edit.
 
     Returns:
-        True if the version exists in the project and is a non-deleted draft.
+        True if the version is a non-deleted draft in the project and was created
+        by the requesting user.
     """
 
     return RequirementVersion.objects.filter(
@@ -118,4 +120,5 @@ def requirement_version_can_be_edited(
         feature__project_id=project_id,
         is_deleted=False,
         status=RequirementVersion.Status.DRAFT,
+        created_by_id=user_id,
     ).exists()

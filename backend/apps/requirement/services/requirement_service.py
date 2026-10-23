@@ -18,6 +18,7 @@ from ..exceptions import (
     RequirementTitleRequiredError,
     RequirementVersionNotEditableError,
     RequirementVersionNotFoundError,
+    RequirementVersionNotApprovedError,
     RequirementVersionUpdateForbiddenError,
 )
 from ..identifiers import requirement_key_generate
@@ -169,6 +170,11 @@ def requirement_version_create(
             "Source version does not exist for this requirement."
         ) from exc
 
+    if source_version.status != RequirementVersion.Status.APPROVED:
+        raise RequirementVersionNotApprovedError(
+            "New requirement versions can only be based on approved versions."
+        )
+
     latest_number = RequirementVersion.objects.filter(
         requirement=requirement,
     ).aggregate(max_version=Max("version"))["max_version"] or 0
@@ -243,7 +249,8 @@ def requirement_version_update(
         RequirementVersionUpdateForbiddenError: If the user cannot edit requirements.
         RequirementNotFoundError: If the requirement is not in the project.
         RequirementVersionNotFoundError: If the version is inactive or outside the project.
-        RequirementVersionNotEditableError: If the version is not a draft.
+        RequirementVersionNotEditableError: If the version is not a draft created by
+            the requesting user.
         RequirementFeatureNotFoundError: If the feature is not in the project.
         RequirementReleaseVersionNotFoundError: If a referenced release does not exist.
         RequirementTitleRequiredError: If the updated title is empty.
@@ -284,6 +291,7 @@ def requirement_version_update(
         project_id=project_id,
         requirement_id=requirement_id,
         version_id=version_id,
+        user_id=user_id,
     ):
         raise RequirementVersionNotEditableError(
             "Only draft requirement versions can be edited."
@@ -291,12 +299,12 @@ def requirement_version_update(
 
     normalized_title = title.strip()
     if not normalized_title:
-            raise RequirementTitleRequiredError("Requirement title cannot be empty.")
+        raise RequirementTitleRequiredError("Requirement title cannot be empty.")
     normalized_description = description.strip()
     if not normalized_description:
-            raise RequirementDescriptionRequiredError(
-                "Requirement description cannot be empty."
-            )
+        raise RequirementDescriptionRequiredError(
+            "Requirement description cannot be empty."
+        )
 
     try:
         feature = Feature.objects.get(pk=feature_id, project_id=project_id)
