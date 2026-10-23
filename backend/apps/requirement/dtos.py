@@ -51,3 +51,11 @@ class RequirementUpdateDTO:
     feature_id: str
     target_release_version_id: str | None
     implemented_release_version_id: str | None
+
+
+@dataclass(frozen=True)
+class RequirementDeleteDTO:
+    """Serialized result of soft-deleting a requirement."""
+
+    id: str
+    is_deleted: bool

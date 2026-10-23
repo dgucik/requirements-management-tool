@@ -3,9 +3,10 @@ from django.db import transaction
 from apps.project.models import Project
 from apps.project.selectors import project_user_has_edit_permissions
 
-from ..dtos import RequirementCreateDTO, RequirementUpdateDTO
+from ..dtos import RequirementCreateDTO, RequirementDeleteDTO, RequirementUpdateDTO
 from ..exceptions import (
     RequirementCreationForbiddenError,
+    RequirementDeleteForbiddenError,
     RequirementDescriptionRequiredError,
     RequirementFeatureNotFoundError,
     RequirementNotFoundError,
@@ -194,3 +195,42 @@ def requirement_update(
             else None
         ),
     )
+
+
+@transaction.atomic
+def requirement_delete(
+    *, project_id: str, requirement_id: str, user_id: str
+) -> RequirementDeleteDTO:
+    """Soft-delete a requirement in a project.
+
+    Args:
+        project_id: Identifier of the project containing the requirement.
+        requirement_id: Identifier of the requirement to delete.
+        user_id: Identifier of the user requesting deletion.
+
+    Returns:
+        Serialized deletion result.
+
+    Raises:
+        RequirementDeleteForbiddenError: If the user cannot edit the project.
+        RequirementNotFoundError: If the requirement is not active in the project.
+    """
+
+    if not project_user_has_edit_permissions(project_id=project_id, user_id=user_id):
+        raise RequirementDeleteForbiddenError(
+            "Only project editors, moderators, and owners can delete requirements."
+        )
+
+    requirement = (
+        Requirement.objects.select_for_update()
+        .filter(pk=requirement_id, feature__project_id=project_id, is_deleted=False)
+        .first()
+    )
+    if requirement is None:
+        raise RequirementNotFoundError(
+            "Requirement does not exist in the selected project."
+        )
+
+    requirement.is_deleted = True
+    requirement.save(update_fields=["is_deleted", "updated_at"])
+    return RequirementDeleteDTO(id=str(requirement.id), is_deleted=True)

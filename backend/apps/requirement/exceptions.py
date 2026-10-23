@@ -13,6 +13,10 @@ class RequirementUpdateForbiddenError(PermissionDeniedError):
     """Raised when a user cannot update requirements in a project."""
 
 
+class RequirementDeleteForbiddenError(PermissionDeniedError):
+    """Raised when a user cannot delete requirements in a project."""
+
+
 class RequirementFeatureNotFoundError(EntityNotFoundError):
     """Raised when the selected feature does not belong to the project."""
 

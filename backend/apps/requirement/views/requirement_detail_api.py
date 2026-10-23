@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from ..serializers import RequirementUpdateInputSerializer, RequirementUpdateOutputSerializer
-from ..services import requirement_update
+from ..services import requirement_delete, requirement_update
 
 
 class RequirementDetailApi(APIView):
@@ -69,3 +69,18 @@ class RequirementDetailApi(APIView):
         )
         output_serializer = RequirementUpdateOutputSerializer(requirement)
         return Response(output_serializer.data, status=status.HTTP_200_OK)
+
+    @extend_schema(
+        responses={status.HTTP_204_NO_CONTENT: None},
+        summary="Delete a requirement",
+        tags=["Requirements"],
+    )
+    def delete(self, request, project_id, requirement_id):
+        """Soft-delete the selected requirement."""
+
+        requirement_delete(
+            project_id=str(project_id),
+            requirement_id=str(requirement_id),
+            user_id=str(request.user.pk),
+        )
+        return Response(status=status.HTTP_204_NO_CONTENT)
