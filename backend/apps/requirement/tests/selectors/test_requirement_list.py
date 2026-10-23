@@ -55,7 +55,7 @@ def test_requirement_list_hides_other_users_drafts_and_includes_requesters_draft
 
 
 @pytest.mark.django_db
-def test_requirement_list_does_not_fall_back_to_older_non_draft_version():
+def test_requirement_list_falls_back_to_latest_approved_if_newer_draft_is_other_users():
     user = get_user_model().objects.create_user(username="latest-list-user")
     other_user = get_user_model().objects.create_user(username="latest-other-user")
     project = Project.objects.create(name="Project", code="latest-project")
@@ -82,4 +82,42 @@ def test_requirement_list_does_not_fall_back_to_older_non_draft_version():
         feature=feature,
     )
 
-    assert requirement_list(project_id=str(project.id), user_id=str(user.id)) == []
+    results = requirement_list(project_id=str(project.id), user_id=str(user.id))
+
+    assert len(results) == 1
+    assert results[0].version == 1
+    assert results[0].status == RequirementVersion.Status.APPROVED
+
+
+@pytest.mark.django_db
+def test_requirement_list_returns_own_latest_inreview_version():
+    user = get_user_model().objects.create_user(username="inreview-list-user")
+    project = Project.objects.create(name="Project", code="inreview-project")
+    feature = Feature.objects.create(
+        key="inreview-feature", title="Feature", project=project
+    )
+    requirement = Requirement.objects.create(key="inreview-requirement")
+    RequirementVersion.objects.create(
+        requirement=requirement,
+        created_by=user,
+        title="Approved",
+        description="Approved baseline",
+        status=RequirementVersion.Status.APPROVED,
+        version=1,
+        feature=feature,
+    )
+    RequirementVersion.objects.create(
+        requirement=requirement,
+        created_by=user,
+        title="In review",
+        description="Own in-review version",
+        status=RequirementVersion.Status.INREVIEW,
+        version=2,
+        feature=feature,
+    )
+
+    results = requirement_list(project_id=str(project.id), user_id=str(user.id))
+
+    assert len(results) == 1
+    assert results[0].version == 2
+    assert results[0].status == RequirementVersion.Status.INREVIEW

@@ -15,9 +15,8 @@ class RequirementVersion(BaseModel):
         """Workflow states available for a requirement version."""
 
         DRAFT = "DRAFT", "Draft"
-        PENDING = "PENDING", "Pending"
+        INREVIEW = "INREVIEW", "In review"
         APPROVED = "APPROVED", "Approved"
-        REJECTED = "REJECTED", "Rejected"
 
     requirement = models.ForeignKey(
         Requirement,

@@ -23,17 +23,26 @@ def key_existing_list() -> list[str]:
 
 
 def requirement_list(*, project_id: str, user_id: str) -> list[RequirementListDTO]:
-    """Return project requirements with their latest non-deleted version.
+    """Return requirements with the latest approved or requester-owned in-progress version.
 
     Args:
         project_id: Identifier of the project whose requirements are listed.
         user_id: Identifier of the user requesting the list.
 
     Returns:
-        Flat requirement and version data, ordered by requirement key. Requirements
-        without a non-deleted version in the project are omitted.
+        Flat requirement and version data, ordered by requirement key. Approved
+        versions are visible to all users; draft and in-review versions are visible
+        only to their creator. Requirements without an eligible active version are
+        omitted.
     """
 
+    visible_version_filter = Q(status=RequirementVersion.Status.APPROVED) | Q(
+        status__in=[
+            RequirementVersion.Status.DRAFT,
+            RequirementVersion.Status.INREVIEW,
+        ],
+        created_by_id=user_id,
+    )
     # TODO: This should eventually select the latest approved version, not the
     # version with the highest version number.
     latest_active_version = (
@@ -41,6 +50,7 @@ def requirement_list(*, project_id: str, user_id: str) -> list[RequirementListDT
             requirement_id=OuterRef("requirement_id"),
             is_deleted=False,
         )
+        .filter(visible_version_filter)
         .order_by("-version")
         .values("version")[:1]
     )
@@ -51,10 +61,7 @@ def requirement_list(*, project_id: str, user_id: str) -> list[RequirementListDT
         )
         .annotate(latest_active_version=Subquery(latest_active_version))
         .filter(version=F("latest_active_version"))
-        .filter(
-            ~Q(status=RequirementVersion.Status.DRAFT)
-            | Q(created_by_id=user_id)
-        )
+        .filter(visible_version_filter)
         .order_by("requirement__key")
         .values(
             "requirement_id",
