@@ -57,3 +57,20 @@ class RequirementCreateOutputSerializer(serializers.Serializer):
     id = serializers.UUIDField()
     key = serializers.SlugField(max_length=255)
     first_version = RequirementInitialVersionOutputSerializer()
+
+
+class RequirementListOutputSerializer(serializers.Serializer):
+    """Serialize a requirement with its latest non-deleted version flattened."""
+
+    id = serializers.UUIDField()
+    key = serializers.SlugField(max_length=255)
+    version_id = serializers.UUIDField()
+    based_on_version_id = serializers.UUIDField(allow_null=True)
+    created_by_id = serializers.CharField(allow_null=True)
+    title = serializers.CharField()
+    description = serializers.CharField()
+    status = serializers.CharField()
+    version = serializers.IntegerField()
+    feature_id = serializers.UUIDField()
+    target_release_version_id = serializers.UUIDField(allow_null=True)
+    implemented_release_version_id = serializers.UUIDField(allow_null=True)

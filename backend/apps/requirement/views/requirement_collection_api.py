@@ -7,14 +7,30 @@ from rest_framework.views import APIView
 from ..serializers import (
     RequirementCreateInputSerializer,
     RequirementCreateOutputSerializer,
+    RequirementListOutputSerializer,
 )
+from ..selectors import requirement_list
 from ..services import requirement_create
 
 
 class RequirementCollectionApi(APIView):
-    """Create requirements in a project."""
+    """List and create requirements in a project."""
 
     permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        responses=RequirementListOutputSerializer(many=True),
+        summary="List requirements with their latest active versions",
+    )
+    def get(self, request, project_id):
+        """Return requirements and their latest non-deleted versions."""
+
+        requirements = requirement_list(project_id=str(project_id))
+        output_serializer = RequirementListOutputSerializer(
+            requirements,
+            many=True,
+        )
+        return Response(output_serializer.data, status=status.HTTP_200_OK)
 
     @extend_schema(
         request=RequirementCreateInputSerializer,
