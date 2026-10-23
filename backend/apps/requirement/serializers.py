@@ -13,22 +13,6 @@ class RequirementCreateInputSerializer(serializers.Serializer):
     feature_id = serializers.UUIDField()
 
 
-class RequirementInitialVersionOutputSerializer(serializers.Serializer):
-    """Serialize the first version created with a requirement."""
-
-    id = serializers.UUIDField()
-    requirement_id = serializers.UUIDField()
-    based_on_version_id = serializers.UUIDField(allow_null=True)
-    created_by_id = serializers.CharField(allow_null=True)
-    title = serializers.CharField()
-    description = serializers.CharField()
-    status = serializers.CharField()
-    version = serializers.IntegerField()
-    feature_id = serializers.UUIDField()
-    target_release_version_id = serializers.CharField(allow_null=True)
-    implemented_release_version_id = serializers.CharField(allow_null=True)
-
-
 class RequirementVersionCreateInputSerializer(serializers.Serializer):
     """Validate the source version used to create a new draft version."""
 
@@ -52,11 +36,20 @@ class RequirementVersionCreateOutputSerializer(serializers.Serializer):
 
 
 class RequirementCreateOutputSerializer(serializers.Serializer):
-    """Serialize a newly created requirement and its first version."""
+    """Serialize a newly created requirement and its first version as flat fields."""
 
     id = serializers.UUIDField()
     key = serializers.SlugField(max_length=255)
-    first_version = RequirementInitialVersionOutputSerializer()
+    version_id = serializers.UUIDField()
+    based_on_version_id = serializers.UUIDField(allow_null=True)
+    created_by_id = serializers.CharField()
+    title = serializers.CharField()
+    description = serializers.CharField()
+    status = serializers.CharField()
+    version = serializers.IntegerField()
+    feature_id = serializers.UUIDField()
+    target_release_version_id = serializers.UUIDField(allow_null=True)
+    implemented_release_version_id = serializers.UUIDField(allow_null=True)
 
 
 class RequirementListOutputSerializer(serializers.Serializer):

@@ -6,7 +6,6 @@ from apps.project.selectors import project_user_can_create_requirement
 
 from ..dtos import (
     RequirementCreateDTO,
-    RequirementInitialVersionDTO,
     RequirementVersionCreateDTO,
 )
 from ..exceptions import (
@@ -96,19 +95,16 @@ def requirement_create(
     return RequirementCreateDTO(
         id=str(requirement.id),
         key=requirement.key,
-        first_version=RequirementInitialVersionDTO(
-            id=str(first_version.id),
-            requirement_id=str(requirement.id),
-            based_on_version_id=None,
-            created_by_id=str(user_id),
-            title=first_version.title,
-            description=first_version.description,
-            status=first_version.status,
-            version=first_version.version,
-            feature_id=str(feature.id),
-            target_release_version_id=None,
-            implemented_release_version_id=None,
-        ),
+        version_id=str(first_version.id),
+        based_on_version_id=None,
+        created_by_id=str(user_id),
+        title=first_version.title,
+        description=first_version.description,
+        status=first_version.status,
+        version=first_version.version,
+        feature_id=str(feature.id),
+        target_release_version_id=None,
+        implemented_release_version_id=None,
     )
 
 

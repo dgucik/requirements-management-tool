@@ -2,13 +2,14 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
-class RequirementInitialVersionDTO:
-    """Serialized first requirement version data returned after creation."""
+class RequirementCreateDTO:
+    """Flat requirement and first-version data returned after creation."""
 
     id: str
-    requirement_id: str
+    key: str
+    version_id: str
     based_on_version_id: str | None
-    created_by_id: str | None
+    created_by_id: str
     title: str
     description: str
     status: str
@@ -16,15 +17,6 @@ class RequirementInitialVersionDTO:
     feature_id: str
     target_release_version_id: str | None
     implemented_release_version_id: str | None
-
-
-@dataclass(frozen=True)
-class RequirementCreateDTO:
-    """Serialized requirement and first version data returned after creation."""
-
-    id: str
-    key: str
-    first_version: RequirementInitialVersionDTO
 
 
 @dataclass(frozen=True)
