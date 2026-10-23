@@ -23,3 +23,11 @@ class RequirementTitleRequiredError(BusinessRuleError):
 
 class RequirementDescriptionRequiredError(BusinessRuleError):
     """Raised when the first requirement version has no description."""
+
+
+class FeatureCreationForbiddenError(PermissionDeniedError):
+    """Raised when a user cannot create features in a project."""
+
+
+class FeatureTitleRequiredError(BusinessRuleError):
+    """Raised when a feature is created without a non-empty title."""

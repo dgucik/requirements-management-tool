@@ -74,3 +74,22 @@ class RequirementListOutputSerializer(serializers.Serializer):
     feature_id = serializers.UUIDField()
     target_release_version_id = serializers.UUIDField(allow_null=True)
     implemented_release_version_id = serializers.UUIDField(allow_null=True)
+
+
+class FeatureCreateInputSerializer(serializers.Serializer):
+    """Validate the title required to create a project feature."""
+
+    title = serializers.CharField(
+        max_length=255,
+        allow_blank=False,
+        trim_whitespace=True,
+    )
+
+
+class FeatureCreateOutputSerializer(serializers.Serializer):
+    """Serialize a newly created project feature."""
+
+    id = serializers.UUIDField()
+    key = serializers.SlugField(max_length=255)
+    title = serializers.CharField()
+    project_id = serializers.UUIDField()

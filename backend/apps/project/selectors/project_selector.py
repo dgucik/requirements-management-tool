@@ -47,3 +47,25 @@ def project_user_can_create_requirement(*, project_id: str, user_id: str) -> boo
             ProjectMembership.Role.OWNER,
         ],
     ).exists()
+
+
+def project_user_can_create_feature(*, project_id: str, user_id: str) -> bool:
+    """Check whether a user may create features in a project.
+
+    Args:
+        project_id: Identifier of the project to check.
+        user_id: Identifier of the user whose permission is checked.
+
+    Returns:
+        True for project editors, moderators, and owners; otherwise False.
+    """
+
+    return ProjectMembership.objects.filter(
+        project_id=project_id,
+        user_id=user_id,
+        role__in=[
+            ProjectMembership.Role.EDITOR,
+            ProjectMembership.Role.MODERATOR,
+            ProjectMembership.Role.OWNER,
+        ],
+    ).exists()

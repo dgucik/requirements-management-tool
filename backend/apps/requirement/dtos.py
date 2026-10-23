@@ -46,6 +46,16 @@ class RequirementListDTO:
 
 
 @dataclass(frozen=True)
+class FeatureCreateDTO:
+    """Serialized feature data returned after creation."""
+
+    id: str
+    key: str
+    title: str
+    project_id: str
+
+
+@dataclass(frozen=True)
 class RequirementVersionCreateDTO:
     """Serialized requirement version returned after creating a new version."""
 

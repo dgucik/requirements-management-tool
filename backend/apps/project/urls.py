@@ -1,5 +1,7 @@
 from django.urls import include, path
 
+from apps.requirement.views import FeatureCollectionApi
+
 from .views import (
     ProjectCollectionApi,
     ProjectDetailApi,
@@ -15,6 +17,11 @@ urlpatterns = [
     path(
         "<uuid:project_id>/requirements/",
         include("apps.requirement.urls"),
+    ),
+    path(
+        "<uuid:project_id>/features/",
+        FeatureCollectionApi.as_view(),
+        name="project-feature-collection",
     ),
     path(
         "<uuid:project_id>/memberships/",
