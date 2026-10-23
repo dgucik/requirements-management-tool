@@ -19,6 +19,7 @@ from ..exceptions import (
 )
 from ..identifiers import requirement_key_generate
 from ..models import Feature, Requirement, RequirementVersion
+from ..selectors import key_existing_list
 
 
 @transaction.atomic
@@ -79,7 +80,7 @@ def requirement_create(
 
     requirement_key = requirement_key_generate(
         project_code=project.code,
-        existing_keys=Requirement.objects.values_list("key", flat=True),
+        existing_keys=key_existing_list(),
     )
     requirement = Requirement.objects.create(key=requirement_key)
     first_version = RequirementVersion.objects.create(

@@ -38,7 +38,7 @@ def test_requirement_create_allows_project_management_roles(role):
 
     requirement = Requirement.objects.get(id=result.id)
     version = RequirementVersion.objects.get(requirement=requirement)
-    assert result.key == f"p-{role.lower()}-r-1"
+    assert result.key == f"p-{role.lower()}-1"
     assert requirement.key == result.key
     assert version.title == "Login flow"
     assert version.description == "Users can log in."
