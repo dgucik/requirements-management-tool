@@ -2,23 +2,27 @@ from django.db import transaction
 from django.db.models import Max
 
 from apps.project.models import Project
-from apps.project.selectors import project_user_can_create_requirement
+from apps.project.selectors import project_user_has_edit_permissions
 
 from ..dtos import (
     RequirementCreateDTO,
     RequirementVersionCreateDTO,
+    RequirementVersionUpdateDTO,
 )
 from ..exceptions import (
     RequirementCreationForbiddenError,
     RequirementDescriptionRequiredError,
     RequirementFeatureNotFoundError,
     RequirementNotFoundError,
+    RequirementReleaseVersionNotFoundError,
     RequirementTitleRequiredError,
+    RequirementVersionNotEditableError,
     RequirementVersionNotFoundError,
+    RequirementVersionUpdateForbiddenError,
 )
 from ..identifiers import requirement_key_generate
-from ..models import Feature, Requirement, RequirementVersion
-from ..selectors import key_existing_list
+from ..models import Feature, ReleaseVersion, Requirement, RequirementVersion
+from ..selectors import key_existing_list, requirement_version_can_be_edited
 
 
 @transaction.atomic
@@ -49,7 +53,7 @@ def requirement_create(
         RequirementDescriptionRequiredError: If the description is empty after trimming.
     """
 
-    if not project_user_can_create_requirement(
+    if not project_user_has_edit_permissions(
         project_id=project_id,
         user_id=user_id,
     ):
@@ -133,7 +137,7 @@ def requirement_version_create(
         RequirementVersionNotFoundError: If the source version is not in the requirement.
     """
 
-    if not project_user_can_create_requirement(
+    if not project_user_has_edit_permissions(
         project_id=project_id,
         user_id=user_id,
     ):
@@ -200,6 +204,166 @@ def requirement_version_create(
         implemented_release_version_id=(
             str(new_version.implemented_release_version_id)
             if new_version.implemented_release_version_id
+            else None
+        ),
+    )
+
+
+@transaction.atomic
+def requirement_version_update(
+    *,
+    project_id: str,
+    requirement_id: str,
+    version_id: str,
+    user_id: str,
+    title: str,
+    description: str,
+    target_release_version_id: str | None,
+    implemented_release_version_id: str | None,
+    feature_id: str,
+) -> RequirementVersionUpdateDTO:
+    """Update editable fields on a requirement version.
+
+    Args:
+        project_id: Identifier of the project containing the requirement.
+        requirement_id: Identifier of the requirement being updated.
+        version_id: Identifier of the version to update.
+        user_id: Identifier of the user requesting the update.
+        title: New title for the requirement version.
+        description: New description for the requirement version.
+        target_release_version_id: New target release identifier, or None to clear it.
+        implemented_release_version_id: New implemented release identifier, or None
+            to clear it.
+        feature_id: Identifier of the feature assigned to the version.
+
+    Returns:
+        Serialized data for the updated requirement version.
+
+    Raises:
+        RequirementVersionUpdateForbiddenError: If the user cannot edit requirements.
+        RequirementNotFoundError: If the requirement is not in the project.
+        RequirementVersionNotFoundError: If the version is inactive or outside the project.
+        RequirementVersionNotEditableError: If the version is not a draft.
+        RequirementFeatureNotFoundError: If the feature is not in the project.
+        RequirementReleaseVersionNotFoundError: If a referenced release does not exist.
+        RequirementTitleRequiredError: If the updated title is empty.
+        RequirementDescriptionRequiredError: If the updated description is empty.
+    """
+
+    if not project_user_has_edit_permissions(
+        project_id=project_id,
+        user_id=user_id,
+    ):
+        raise RequirementVersionUpdateForbiddenError(
+            "Only project editors, moderators, and owners can update requirement versions."
+        )
+
+    version = (
+        RequirementVersion.objects.select_related("requirement").select_for_update()
+        .filter(
+            pk=version_id,
+            requirement_id=requirement_id,
+            feature__project_id=project_id,
+            is_deleted=False,
+        )
+        .first()
+    )
+    if version is None:
+        if not Requirement.objects.filter(
+            pk=requirement_id,
+            versions__feature__project_id=project_id,
+        ).exists():
+            raise RequirementNotFoundError(
+                "Requirement does not exist in the selected project."
+            )
+        raise RequirementVersionNotFoundError(
+            "Requirement version does not exist or has been deleted."
+        )
+
+    if not requirement_version_can_be_edited(
+        project_id=project_id,
+        requirement_id=requirement_id,
+        version_id=version_id,
+    ):
+        raise RequirementVersionNotEditableError(
+            "Only draft requirement versions can be edited."
+        )
+
+    normalized_title = title.strip()
+    if not normalized_title:
+            raise RequirementTitleRequiredError("Requirement title cannot be empty.")
+    normalized_description = description.strip()
+    if not normalized_description:
+            raise RequirementDescriptionRequiredError(
+                "Requirement description cannot be empty."
+            )
+
+    try:
+        feature = Feature.objects.get(pk=feature_id, project_id=project_id)
+    except Feature.DoesNotExist as exc:
+        raise RequirementFeatureNotFoundError(
+            "Feature does not exist in the selected project."
+        ) from exc
+
+    release_versions: dict[str, ReleaseVersion | None] = {}
+    for field_name, release_version_id in (
+        ("target_release_version", target_release_version_id),
+        ("implemented_release_version", implemented_release_version_id),
+    ):
+        if release_version_id is None:
+            release_versions[field_name] = None
+            continue
+        try:
+            release_versions[field_name] = ReleaseVersion.objects.get(
+                pk=release_version_id
+            )
+        except ReleaseVersion.DoesNotExist as exc:
+            raise RequirementReleaseVersionNotFoundError(
+                "Release version does not exist."
+            ) from exc
+
+    version.title = normalized_title
+    version.description = normalized_description
+    version.feature = feature
+    version.target_release_version = release_versions["target_release_version"]
+    version.implemented_release_version = release_versions[
+        "implemented_release_version"
+    ]
+    version.save(
+        update_fields=[
+            "title",
+            "description",
+            "feature",
+            "target_release_version",
+            "implemented_release_version",
+            "updated_at",
+        ]
+    )
+
+    return RequirementVersionUpdateDTO(
+        id=str(version.id),
+        requirement_id=str(version.requirement_id),
+        based_on_version_id=(
+            str(version.based_on_version_id)
+            if version.based_on_version_id
+            else None
+        ),
+        created_by_id=(
+            str(version.created_by_id) if version.created_by_id else None
+        ),
+        title=version.title,
+        description=version.description,
+        status=version.status,
+        version=version.version,
+        feature_id=str(version.feature_id),
+        target_release_version_id=(
+            str(version.target_release_version_id)
+            if version.target_release_version_id
+            else None
+        ),
+        implemented_release_version_id=(
+            str(version.implemented_release_version_id)
+            if version.implemented_release_version_id
             else None
         ),
     )

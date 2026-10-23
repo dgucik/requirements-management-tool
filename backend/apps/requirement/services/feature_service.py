@@ -2,7 +2,7 @@ from django.db import transaction
 
 from apps.project.exceptions import ProjectNotFoundError
 from apps.project.models import Project
-from apps.project.selectors import project_user_can_create_feature
+from apps.project.selectors import project_user_has_edit_permissions
 
 from ..dtos import FeatureCreateDTO
 from ..exceptions import FeatureCreationForbiddenError, FeatureTitleRequiredError
@@ -40,7 +40,7 @@ def feature_create(
     except Project.DoesNotExist as exc:
         raise ProjectNotFoundError("Project does not exist.") from exc
 
-    if not project_user_can_create_feature(
+    if not project_user_has_edit_permissions(
         project_id=project_id,
         user_id=user_id,
     ):

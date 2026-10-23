@@ -12,7 +12,7 @@ from ..services import requirement_version_create
 
 
 class RequirementVersionCollectionApi(APIView):
-    """Create a new draft version from an existing requirement version."""
+    """Create requirement versions."""
 
     permission_classes = [IsAuthenticated]
 

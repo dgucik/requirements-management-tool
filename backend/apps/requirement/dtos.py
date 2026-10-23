@@ -62,3 +62,20 @@ class RequirementVersionCreateDTO:
     feature_id: str
     target_release_version_id: str | None
     implemented_release_version_id: str | None
+
+
+@dataclass(frozen=True)
+class RequirementVersionUpdateDTO:
+    """Serialized requirement version data returned after updating it."""
+
+    id: str
+    requirement_id: str
+    based_on_version_id: str | None
+    created_by_id: str | None
+    title: str
+    description: str
+    status: str
+    version: int
+    feature_id: str
+    target_release_version_id: str | None
+    implemented_release_version_id: str | None
