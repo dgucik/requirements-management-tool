@@ -26,7 +26,10 @@ class RequirementCollectionApi(APIView):
     def get(self, request, project_id):
         """Return requirements and their latest non-deleted versions."""
 
-        requirements = requirement_list(project_id=str(project_id))
+        requirements = requirement_list(
+            project_id=str(project_id),
+            user_id=str(request.user.pk),
+        )
         output_serializer = RequirementListOutputSerializer(
             requirements,
             many=True,

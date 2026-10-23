@@ -1,6 +1,6 @@
 from itertools import chain
 
-from django.db.models import F, OuterRef, Subquery
+from django.db.models import F, OuterRef, Q, Subquery
 
 from .dtos import RequirementListDTO
 from .models import BusinessRule, Feature, Requirement
@@ -22,17 +22,20 @@ def key_existing_list() -> list[str]:
     return sorted(set(chain.from_iterable(key_querysets)))
 
 
-def requirement_list(*, project_id: str) -> list[RequirementListDTO]:
+def requirement_list(*, project_id: str, user_id: str) -> list[RequirementListDTO]:
     """Return project requirements with their latest non-deleted version.
 
     Args:
         project_id: Identifier of the project whose requirements are listed.
+        user_id: Identifier of the user requesting the list.
 
     Returns:
         Flat requirement and version data, ordered by requirement key. Requirements
         without a non-deleted version in the project are omitted.
     """
 
+    # TODO: This should eventually select the latest approved version, not the
+    # version with the highest version number.
     latest_active_version = (
         RequirementVersion.objects.filter(
             requirement_id=OuterRef("requirement_id"),
@@ -48,6 +51,10 @@ def requirement_list(*, project_id: str) -> list[RequirementListDTO]:
         )
         .annotate(latest_active_version=Subquery(latest_active_version))
         .filter(version=F("latest_active_version"))
+        .filter(
+            ~Q(status=RequirementVersion.Status.DRAFT)
+            | Q(created_by_id=user_id)
+        )
         .order_by("requirement__key")
         .values(
             "requirement_id",
