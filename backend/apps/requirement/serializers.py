@@ -2,68 +2,29 @@ from rest_framework import serializers
 
 
 class RequirementCreateInputSerializer(serializers.Serializer):
-    """Validate data required to create a requirement and its first version."""
+    """Validate data required to create a requirement."""
 
-    title = serializers.CharField(
-        max_length=255,
-        allow_blank=False,
-        trim_whitespace=True,
-    )
+    title = serializers.CharField(max_length=255, allow_blank=False, trim_whitespace=True)
     description = serializers.CharField(allow_blank=False, trim_whitespace=True)
     feature_id = serializers.UUIDField()
 
 
-class RequirementVersionCreateInputSerializer(serializers.Serializer):
-    """Validate the source version used to create a new draft version."""
+class RequirementUpdateInputSerializer(serializers.Serializer):
+    """Validate editable fields for a requirement."""
 
-    based_on_version_id = serializers.UUIDField()
-
-
-class RequirementVersionCreateOutputSerializer(serializers.Serializer):
-    """Serialize a new draft version created from an existing version."""
-
-    id = serializers.UUIDField()
-    requirement_id = serializers.UUIDField()
-    based_on_version_id = serializers.UUIDField()
-    created_by_id = serializers.CharField()
-    title = serializers.CharField()
-    description = serializers.CharField()
-    status = serializers.CharField()
-    version = serializers.IntegerField()
-    feature_id = serializers.UUIDField()
-    target_release_version_id = serializers.CharField(allow_null=True)
-    implemented_release_version_id = serializers.CharField(allow_null=True)
-
-
-class RequirementVersionUpdateInputSerializer(serializers.Serializer):
-    """Validate editable fields for an existing requirement version."""
-
-    title = serializers.CharField(
-        max_length=255,
-        allow_blank=False,
-        trim_whitespace=True,
-    )
-    description = serializers.CharField(
-        allow_blank=False,
-        trim_whitespace=True,
-    )
-    target_release_version_id = serializers.UUIDField(
-        allow_null=True,
-    )
-    implemented_release_version_id = serializers.UUIDField(
-        allow_null=True,
-    )
-    feature_id = serializers.UUIDField()
+    title = serializers.CharField(max_length=255, allow_blank=False, trim_whitespace=True)
+    description = serializers.CharField(allow_blank=False, trim_whitespace=True)
+    target_release_version_id = serializers.UUIDField(allow_null=True)
+    implemented_release_version_id = serializers.UUIDField(allow_null=True)
 
     def validate(self, attrs):
-        """Reject fields outside the version's editable attributes."""
+        """Reject fields outside the requirement's editable attributes."""
 
         editable_fields = {
             "title",
             "description",
             "target_release_version_id",
             "implemented_release_version_id",
-            "feature_id",
         }
         unsupported_fields = set(self.initial_data) - editable_fields
         if unsupported_fields:
@@ -76,51 +37,35 @@ class RequirementVersionUpdateInputSerializer(serializers.Serializer):
         return attrs
 
 
-class RequirementVersionUpdateOutputSerializer(serializers.Serializer):
-    """Serialize the updated requirement version."""
-
-    id = serializers.UUIDField()
-    requirement_id = serializers.UUIDField()
-    based_on_version_id = serializers.UUIDField(allow_null=True)
-    created_by_id = serializers.CharField(allow_null=True)
-    title = serializers.CharField()
-    description = serializers.CharField()
-    status = serializers.CharField()
-    version = serializers.IntegerField()
-    feature_id = serializers.UUIDField()
-    target_release_version_id = serializers.UUIDField(allow_null=True)
-    implemented_release_version_id = serializers.UUIDField(allow_null=True)
-
-
-class RequirementCreateOutputSerializer(serializers.Serializer):
-    """Serialize a newly created requirement and its first version as flat fields."""
+class RequirementOutputSerializer(serializers.Serializer):
+    """Serialize a requirement."""
 
     id = serializers.UUIDField()
     key = serializers.SlugField(max_length=255)
-    version_id = serializers.UUIDField()
-    based_on_version_id = serializers.UUIDField(allow_null=True)
-    created_by_id = serializers.CharField()
+    created_by_id = serializers.CharField(allow_null=True)
     title = serializers.CharField()
     description = serializers.CharField()
-    status = serializers.CharField()
-    version = serializers.IntegerField()
     feature_id = serializers.UUIDField()
     target_release_version_id = serializers.UUIDField(allow_null=True)
     implemented_release_version_id = serializers.UUIDField(allow_null=True)
+
+
+class RequirementCreateOutputSerializer(RequirementOutputSerializer):
+    """Serialize a newly created requirement."""
+
+
+class RequirementUpdateOutputSerializer(RequirementOutputSerializer):
+    """Serialize an updated requirement."""
 
 
 class RequirementListOutputSerializer(serializers.Serializer):
-    """Serialize a requirement with its latest non-deleted version flattened."""
+    """Serialize requirement fields returned by the list endpoint."""
 
     id = serializers.UUIDField()
     key = serializers.SlugField(max_length=255)
-    version_id = serializers.UUIDField()
-    based_on_version_id = serializers.UUIDField(allow_null=True)
     created_by_id = serializers.CharField(allow_null=True)
     title = serializers.CharField()
     description = serializers.CharField()
-    status = serializers.CharField()
-    version = serializers.IntegerField()
     feature_id = serializers.UUIDField()
     target_release_version_id = serializers.UUIDField(allow_null=True)
     implemented_release_version_id = serializers.UUIDField(allow_null=True)
@@ -129,11 +74,7 @@ class RequirementListOutputSerializer(serializers.Serializer):
 class FeatureCreateInputSerializer(serializers.Serializer):
     """Validate the title required to create a project feature."""
 
-    title = serializers.CharField(
-        max_length=255,
-        allow_blank=False,
-        trim_whitespace=True,
-    )
+    title = serializers.CharField(max_length=255, allow_blank=False, trim_whitespace=True)
 
 
 class FeatureCreateOutputSerializer(serializers.Serializer):

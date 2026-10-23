@@ -1,13 +1,8 @@
 from .feature_service import feature_create
-from .requirement_service import (
-    requirement_create,
-    requirement_version_create,
-    requirement_version_update,
-)
+from .requirement_service import requirement_create, requirement_update
 
 __all__ = [
     "feature_create",
     "requirement_create",
-    "requirement_version_create",
-    "requirement_version_update",
+    "requirement_update",
 ]

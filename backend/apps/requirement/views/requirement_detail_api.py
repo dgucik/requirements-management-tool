@@ -4,15 +4,12 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from ..serializers import (
-    RequirementVersionUpdateInputSerializer,
-    RequirementVersionUpdateOutputSerializer,
-)
-from ..services import requirement_version_update
+from ..serializers import RequirementUpdateInputSerializer, RequirementUpdateOutputSerializer
+from ..services import requirement_update
 
 
-class RequirementVersionDetailApi(APIView):
-    """Update an existing requirement version."""
+class RequirementDetailApi(APIView):
+    """Update an existing requirement."""
 
     permission_classes = [IsAuthenticated]
 
@@ -25,7 +22,6 @@ class RequirementVersionDetailApi(APIView):
                     "description",
                     "target_release_version_id",
                     "implemented_release_version_id",
-                    "feature_id",
                 ],
                 "properties": {
                     "title": {"type": "string", "maxLength": 255},
@@ -40,25 +36,23 @@ class RequirementVersionDetailApi(APIView):
                         "format": "uuid",
                         "nullable": True,
                     },
-                    "feature_id": {"type": "string", "format": "uuid"},
                 },
             }
         ),
-        responses=RequirementVersionUpdateOutputSerializer,
-        summary="Update editable requirement version fields",
+        responses=RequirementUpdateOutputSerializer,
+        summary="Update a requirement",
         tags=["Requirements"],
     )
-    def patch(self, request, project_id, requirement_id, version_id):
-        """Validate editable fields and delegate version updates to the service."""
+    def patch(self, request, project_id, requirement_id):
+        """Validate editable fields and delegate requirement updates to the service."""
 
-        input_serializer = RequirementVersionUpdateInputSerializer(data=request.data)
+        input_serializer = RequirementUpdateInputSerializer(data=request.data)
         input_serializer.is_valid(raise_exception=True)
         data = input_serializer.validated_data
 
-        version = requirement_version_update(
+        requirement = requirement_update(
             project_id=str(project_id),
             requirement_id=str(requirement_id),
-            version_id=str(version_id),
             user_id=str(request.user.pk),
             title=data["title"],
             description=data["description"],
@@ -72,7 +66,6 @@ class RequirementVersionDetailApi(APIView):
                 if data["implemented_release_version_id"]
                 else None
             ),
-            feature_id=str(data["feature_id"]),
         )
-        output_serializer = RequirementVersionUpdateOutputSerializer(version)
+        output_serializer = RequirementUpdateOutputSerializer(requirement)
         return Response(output_serializer.data, status=status.HTTP_200_OK)

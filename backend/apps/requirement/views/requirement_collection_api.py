@@ -20,15 +20,14 @@ class RequirementCollectionApi(APIView):
 
     @extend_schema(
         responses=RequirementListOutputSerializer(many=True),
-        summary="List requirements with their latest active versions",
+        summary="List requirements",
         tags=["Requirements"],
     )
     def get(self, request, project_id):
-        """Return requirements and their latest non-deleted versions."""
+        """Return all requirements in the project."""
 
         requirements = requirement_list(
             project_id=str(project_id),
-            user_id=str(request.user.pk),
         )
         output_serializer = RequirementListOutputSerializer(
             requirements,
@@ -39,7 +38,7 @@ class RequirementCollectionApi(APIView):
     @extend_schema(
         request=RequirementCreateInputSerializer,
         responses=RequirementCreateOutputSerializer,
-        summary="Create a requirement and its first version",
+        summary="Create a requirement",
         tags=["Requirements"],
     )
     def post(self, request, project_id):

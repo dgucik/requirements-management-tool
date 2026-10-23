@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from apps.project.models import Project, ProjectMembership
 
 from ...exceptions import RequirementCreationForbiddenError
-from ...models import Feature, Requirement, RequirementVersion
+from ...models import Feature, Requirement
 from ...services import requirement_create
 
 
@@ -37,13 +37,12 @@ def test_requirement_create_allows_project_management_roles(role):
     )
 
     requirement = Requirement.objects.get(id=result.id)
-    version = RequirementVersion.objects.get(requirement=requirement)
     assert result.key == f"p-{role.lower()}-1"
     assert requirement.key == result.key
-    assert version.title == "Login flow"
-    assert version.description == "Users can log in."
-    assert version.status == RequirementVersion.Status.DRAFT
-    assert version.version == 1
+    assert requirement.title == "Login flow"
+    assert requirement.description == "Users can log in."
+    assert requirement.created_by_id == user.id
+    assert requirement.feature_id == feature.id
 
 
 @pytest.mark.django_db

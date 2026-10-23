@@ -3,121 +3,41 @@ from django.contrib.auth import get_user_model
 
 from apps.project.models import Project
 
-from ...models import Feature, Requirement, RequirementVersion
+from ...models import Feature, Requirement
 from ...selectors import requirement_list
 
 
 @pytest.mark.django_db
-def test_requirement_list_hides_other_users_drafts_and_includes_requesters_drafts():
-    user = get_user_model().objects.create_user(username="list-user")
-    other_user = get_user_model().objects.create_user(username="other-list-user")
-    project = Project.objects.create(name="Project", code="list-project")
+def test_requirement_list_returns_all_non_deleted_project_requirements():
+    user = get_user_model().objects.create_user(username="requirement-list-user")
+    project = Project.objects.create(name="Project", code="requirement-list")
     feature = Feature.objects.create(
-        key="list-feature", title="Feature", project=project
+        key="requirement-list-feature", title="Feature", project=project
     )
-
-    own_draft = Requirement.objects.create(key="own-draft")
-    RequirementVersion.objects.create(
-        requirement=own_draft,
+    first = Requirement.objects.create(
+        key="requirement-list-1",
         created_by=user,
-        title="Own draft",
-        description="Visible to author",
-        status=RequirementVersion.Status.DRAFT,
-        version=1,
+        title="First",
+        description="First requirement",
         feature=feature,
     )
-
-    other_draft = Requirement.objects.create(key="other-draft")
-    RequirementVersion.objects.create(
-        requirement=other_draft,
-        created_by=other_user,
-        title="Other draft",
-        description="Not visible to requester",
-        status=RequirementVersion.Status.DRAFT,
-        version=1,
-        feature=feature,
-    )
-
-    approved = Requirement.objects.create(key="approved")
-    RequirementVersion.objects.create(
-        requirement=approved,
-        created_by=other_user,
-        title="Approved",
-        description="Visible regardless of author",
-        status=RequirementVersion.Status.APPROVED,
-        version=1,
-        feature=feature,
-    )
-
-    results = requirement_list(project_id=str(project.id), user_id=str(user.id))
-
-    assert [result.key for result in results] == ["approved", "own-draft"]
-
-
-@pytest.mark.django_db
-def test_requirement_list_falls_back_to_latest_approved_if_newer_draft_is_other_users():
-    user = get_user_model().objects.create_user(username="latest-list-user")
-    other_user = get_user_model().objects.create_user(username="latest-other-user")
-    project = Project.objects.create(name="Project", code="latest-project")
-    feature = Feature.objects.create(
-        key="latest-feature", title="Feature", project=project
-    )
-    requirement = Requirement.objects.create(key="latest-draft")
-    RequirementVersion.objects.create(
-        requirement=requirement,
-        created_by=other_user,
-        title="Approved older version",
-        description="Must not be used as fallback",
-        status=RequirementVersion.Status.APPROVED,
-        version=1,
-        feature=feature,
-    )
-    RequirementVersion.objects.create(
-        requirement=requirement,
-        created_by=other_user,
-        title="Latest draft",
-        description="Hidden draft",
-        status=RequirementVersion.Status.DRAFT,
-        version=2,
-        feature=feature,
-    )
-
-    results = requirement_list(project_id=str(project.id), user_id=str(user.id))
-
-    assert len(results) == 1
-    assert results[0].version == 1
-    assert results[0].status == RequirementVersion.Status.APPROVED
-
-
-@pytest.mark.django_db
-def test_requirement_list_returns_own_latest_inreview_version():
-    user = get_user_model().objects.create_user(username="inreview-list-user")
-    project = Project.objects.create(name="Project", code="inreview-project")
-    feature = Feature.objects.create(
-        key="inreview-feature", title="Feature", project=project
-    )
-    requirement = Requirement.objects.create(key="inreview-requirement")
-    RequirementVersion.objects.create(
-        requirement=requirement,
+    second = Requirement.objects.create(
+        key="requirement-list-2",
         created_by=user,
-        title="Approved",
-        description="Approved baseline",
-        status=RequirementVersion.Status.APPROVED,
-        version=1,
+        title="Second",
+        description="Second requirement",
         feature=feature,
     )
-    RequirementVersion.objects.create(
-        requirement=requirement,
+    Requirement.objects.create(
+        key="requirement-list-deleted",
         created_by=user,
-        title="In review",
-        description="Own in-review version",
-        status=RequirementVersion.Status.INREVIEW,
-        version=2,
+        title="Deleted",
+        description="Deleted requirement",
         feature=feature,
+        is_deleted=True,
     )
 
-    results = requirement_list(project_id=str(project.id), user_id=str(user.id))
+    results = requirement_list(project_id=str(project.id))
 
-    assert len(results) == 1
-    assert results[0].version == 2
-    assert results[0].status == RequirementVersion.Status.INREVIEW
+    assert [item.id for item in results] == [str(first.id), str(second.id)]
+    assert [item.title for item in results] == ["First", "Second"]
