@@ -54,7 +54,7 @@ def requirement_create(
             "Requirement description cannot be empty."
         )
 
-    project = Project.objects.get(pk=project_id)
+    project = Project.objects.get(pk=project_id, is_deleted=False)
     try:
         feature = Feature.objects.get(pk=feature_id, project_id=project.id)
     except Feature.DoesNotExist as exc:

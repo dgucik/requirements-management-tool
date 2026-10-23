@@ -12,7 +12,7 @@ from ...services import project_delete
 
 
 @pytest.mark.django_db
-def test_project_delete_owner_deletes_project_and_memberships():
+def test_project_delete_owner_soft_deletes_project_and_preserves_memberships():
     # Arrange
     owner = get_user_model().objects.create_user(username="project-owner")
     project = Project.objects.create(name="Requirements Tool", code="requirements-tool")
@@ -26,8 +26,10 @@ def test_project_delete_owner_deletes_project_and_memberships():
     project_delete(project_id=str(project.id), user_id=str(owner.pk))
 
     # Assert
-    assert not Project.objects.filter(id=project.id).exists()
-    assert not ProjectMembership.objects.filter(project_id=project.id).exists()
+    project.refresh_from_db()
+    assert project.is_deleted is True
+    assert Project.objects.filter(id=project.id).exists()
+    assert ProjectMembership.objects.filter(project_id=project.id).exists()
 
 
 @pytest.mark.django_db

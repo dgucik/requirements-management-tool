@@ -8,6 +8,7 @@ class Project(BaseModel):
 
     name = models.CharField(max_length=255)
     code = models.SlugField(max_length=10, unique=True)
+    is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
         """Return the project's display name."""

@@ -15,10 +15,18 @@ def test_project_list_returns_projects_with_user_membership():
     excluded_project = Project.objects.create(
         name="Excluded project", code="excluded-project"
     )
+    deleted_project = Project.objects.create(
+        name="Deleted project", code="deleted-project", is_deleted=True
+    )
     ProjectMembership.objects.create(
         user=user,
         project=included_project,
         role=ProjectMembership.Role.VIEWER,
+    )
+    ProjectMembership.objects.create(
+        user=user,
+        project=deleted_project,
+        role=ProjectMembership.Role.OWNER,
     )
 
     # Act

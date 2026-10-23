@@ -70,7 +70,7 @@ def project_create(*, name: str, owner_user_id: str) -> ProjectCreateDTO:
 
 @transaction.atomic
 def project_delete(*, project_id: str, user_id: str) -> None:
-    """Delete a project when the requesting user is its owner.
+    """Soft-delete a project when the requesting user is its owner.
 
     Args:
         project_id: Identifier of the project to delete.
@@ -82,7 +82,7 @@ def project_delete(*, project_id: str, user_id: str) -> None:
     """
 
     try:
-        project = Project.objects.get(pk=project_id)
+        project = Project.objects.get(pk=project_id, is_deleted=False)
     except Project.DoesNotExist as exc:
         raise ProjectNotFoundError("Project does not exist.") from exc
 
@@ -96,7 +96,8 @@ def project_delete(*, project_id: str, user_id: str) -> None:
             "Only the project owner can delete the project."
         )
 
-    project.delete()
+    project.is_deleted = True
+    project.save(update_fields=["is_deleted", "updated_at"])
 
 
 @transaction.atomic
@@ -124,7 +125,7 @@ def project_update(
         raise ProjectNameRequiredError("Project name cannot be empty.")
 
     try:
-        project = Project.objects.get(pk=project_id)
+        project = Project.objects.get(pk=project_id, is_deleted=False)
     except Project.DoesNotExist as exc:
         raise ProjectNotFoundError("Project does not exist.") from exc
 

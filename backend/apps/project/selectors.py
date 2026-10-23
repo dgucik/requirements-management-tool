@@ -15,6 +15,7 @@ def project_list(*, user_id: str) -> list[ProjectListDTO]:
 
     memberships = Project.objects.filter(
         memberships__user_id=user_id,
+        is_deleted=False,
     ).values("id", "name", "code", "memberships__role")
 
     return [
@@ -41,6 +42,7 @@ def project_user_has_edit_permissions(*, project_id: str, user_id: str) -> bool:
 
     return ProjectMembership.objects.filter(
         project_id=project_id,
+        project__is_deleted=False,
         user_id=user_id,
         role__in=[
             ProjectMembership.Role.EDITOR,
@@ -63,7 +65,7 @@ def project_membership_list(*, project_id: str) -> list[ProjectMembershipListDTO
         ProjectNotFoundError: If the project does not exist.
     """
 
-    if not Project.objects.filter(id=project_id).exists():
+    if not Project.objects.filter(id=project_id, is_deleted=False).exists():
         raise ProjectNotFoundError("Project does not exist.")
 
     memberships = ProjectMembership.objects.filter(project_id=project_id).values(

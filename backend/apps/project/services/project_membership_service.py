@@ -38,7 +38,7 @@ def project_membership_create(
     """
 
     try:
-        project = Project.objects.get(pk=project_id)
+        project = Project.objects.get(pk=project_id, is_deleted=False)
     except Project.DoesNotExist as exc:
         raise ProjectNotFoundError("Project does not exist.") from exc
 
@@ -109,7 +109,7 @@ def project_membership_delete(
     """
 
     try:
-        project = Project.objects.get(pk=project_id)
+        project = Project.objects.get(pk=project_id, is_deleted=False)
     except Project.DoesNotExist as exc:
         raise ProjectNotFoundError("Project does not exist.") from exc
 
@@ -175,7 +175,7 @@ def project_membership_update(
     """
 
     try:
-        project = Project.objects.get(pk=project_id)
+        project = Project.objects.get(pk=project_id, is_deleted=False)
     except Project.DoesNotExist as exc:
         raise ProjectNotFoundError("Project does not exist.") from exc
 
