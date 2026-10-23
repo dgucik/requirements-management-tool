@@ -13,7 +13,11 @@ class ProjectDetailApi(APIView):
 
     permission_classes = [IsAuthenticated]
 
-    @extend_schema(responses={204: None}, summary="Delete a project")
+    @extend_schema(
+        responses={204: None},
+        summary="Delete a project",
+        tags=["Projects"],
+    )
     def delete(self, request, project_id):
         """Delegate project deletion to the project service."""
 
@@ -27,6 +31,7 @@ class ProjectDetailApi(APIView):
         request=ProjectUpdateInputSerializer,
         responses=ProjectUpdateOutputSerializer,
         summary="Update a project",
+        tags=["Projects"],
     )
     def patch(self, request, project_id):
         """Validate the request and delegate the project update to the service."""

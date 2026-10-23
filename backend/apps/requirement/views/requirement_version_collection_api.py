@@ -20,6 +20,7 @@ class RequirementVersionCollectionApi(APIView):
         request=RequirementVersionCreateInputSerializer,
         responses=RequirementVersionCreateOutputSerializer,
         summary="Create a draft requirement version",
+        tags=["Requirements"],
     )
     def post(self, request, project_id, requirement_id):
         """Validate the source version and delegate version creation."""

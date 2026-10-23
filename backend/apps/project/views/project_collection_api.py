@@ -21,6 +21,7 @@ class ProjectCollectionApi(APIView):
     @extend_schema(
         responses=ProjectListOutputSerializer(many=True),
         summary="List projects",
+        tags=["Projects"],
     )
     def get(self, request):
         """Return projects where the authenticated user has a membership."""
@@ -33,6 +34,7 @@ class ProjectCollectionApi(APIView):
         request=ProjectCreateInputSerializer,
         responses=ProjectCreateOutputSerializer,
         summary="Create a project",
+        tags=["Projects"],
     )
     def post(self, request):
         """Validate the request and delegate project creation to the service."""

@@ -21,6 +21,7 @@ class RequirementCollectionApi(APIView):
     @extend_schema(
         responses=RequirementListOutputSerializer(many=True),
         summary="List requirements with their latest active versions",
+        tags=["Requirements"],
     )
     def get(self, request, project_id):
         """Return requirements and their latest non-deleted versions."""
@@ -36,6 +37,7 @@ class RequirementCollectionApi(APIView):
         request=RequirementCreateInputSerializer,
         responses=RequirementCreateOutputSerializer,
         summary="Create a requirement and its first version",
+        tags=["Requirements"],
     )
     def post(self, request, project_id):
         """Validate input and delegate requirement creation to the service."""

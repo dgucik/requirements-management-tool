@@ -20,6 +20,7 @@ class FeatureCollectionApi(APIView):
         request=FeatureCreateInputSerializer,
         responses=FeatureCreateOutputSerializer,
         summary="Create a project feature",
+        tags=["Features"],
     )
     def post(self, request, project_id):
         """Validate the feature title and delegate creation to the service."""
