@@ -1,8 +1,6 @@
 from django.db import transaction
 
-from apps.project.exceptions import ProjectNotFoundError
-from apps.project.models import Project
-from apps.project.selectors import project_user_has_edit_permissions
+from apps.project.selectors import project_get, project_user_has_edit_permissions
 
 from ..dtos import FeatureCreateDTO
 from ..exceptions import FeatureCreationForbiddenError, FeatureTitleRequiredError
@@ -35,10 +33,7 @@ def feature_create(
     if not normalized_title:
         raise FeatureTitleRequiredError("Feature title cannot be empty.")
 
-    try:
-        project = Project.objects.get(pk=project_id, is_deleted=False)
-    except Project.DoesNotExist as exc:
-        raise ProjectNotFoundError("Project does not exist.") from exc
+    project = project_get(project_id=project_id)
 
     if not project_user_has_edit_permissions(
         project_id=project_id,
@@ -54,12 +49,12 @@ def feature_create(
             existing_keys=key_existing_list(),
         ),
         title=normalized_title,
-        project=project,
+        project_id=project.id,
     )
 
     return FeatureCreateDTO(
         id=str(feature.id),
         key=feature.key,
         title=feature.title,
-        project_id=str(project.id),
+        project_id=project.id,
     )

@@ -31,6 +31,15 @@ class ProjectUpdateDTO:
 
 
 @dataclass(frozen=True)
+class ProjectGetDTO:
+    """Serialized project data returned by the project detail selector."""
+
+    id: str
+    name: str
+    code: str
+
+
+@dataclass(frozen=True)
 class ProjectListDTO:
     """Serialized project data returned by the project list selector."""
 

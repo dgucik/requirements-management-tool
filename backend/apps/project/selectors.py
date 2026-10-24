@@ -1,6 +1,34 @@
-from .dtos import ProjectListDTO, ProjectMembershipListDTO
+from .dtos import ProjectGetDTO, ProjectListDTO, ProjectMembershipListDTO
 from .exceptions import ProjectNotFoundError
 from .models import Project, ProjectMembership
+
+
+def project_get(*, project_id: str) -> ProjectGetDTO:
+    """Return an active project by identifier.
+
+    Args:
+        project_id: Identifier of the project to retrieve.
+
+    Returns:
+        Serialized project data.
+
+    Raises:
+        ProjectNotFoundError: If the project does not exist or is deleted.
+    """
+
+    project = (
+        Project.objects.filter(id=project_id, is_deleted=False)
+        .values("id", "name", "code")
+        .first()
+    )
+    if project is None:
+        raise ProjectNotFoundError("Project does not exist.")
+
+    return ProjectGetDTO(
+        id=str(project["id"]),
+        name=project["name"],
+        code=project["code"],
+    )
 
 
 def project_list(*, user_id: str) -> list[ProjectListDTO]:

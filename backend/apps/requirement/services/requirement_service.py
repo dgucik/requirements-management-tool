@@ -1,7 +1,6 @@
 from django.db import transaction
 
-from apps.project.models import Project
-from apps.project.selectors import project_user_has_edit_permissions
+from apps.project.selectors import project_get, project_user_has_edit_permissions
 
 from ..dtos import RequirementCreateDTO, RequirementDeleteDTO, RequirementUpdateDTO
 from ..exceptions import (
@@ -54,7 +53,7 @@ def requirement_create(
             "Requirement description cannot be empty."
         )
 
-    project = Project.objects.get(pk=project_id, is_deleted=False)
+    project = project_get(project_id=project_id)
     try:
         feature = Feature.objects.get(pk=feature_id, project_id=project.id)
     except Feature.DoesNotExist as exc:
