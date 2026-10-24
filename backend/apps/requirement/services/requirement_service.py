@@ -160,7 +160,7 @@ def requirement_update(
             continue
         try:
             release_versions[field_name] = ReleaseVersion.objects.get(
-                pk=release_version_id
+                pk=release_version_id, project_id=project_id
             )
         except ReleaseVersion.DoesNotExist as exc:
             raise RequirementReleaseVersionNotFoundError(

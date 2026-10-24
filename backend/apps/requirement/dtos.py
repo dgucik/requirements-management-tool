@@ -106,6 +106,40 @@ class BusinessRuleDeleteDTO:
 
 
 @dataclass(frozen=True)
+class ReleaseVersionListDTO:
+    """Serialized release version data returned by the list selector."""
+
+    id: str
+    name: str
+    project_id: str
+
+
+@dataclass(frozen=True)
+class ReleaseVersionCreateDTO:
+    """Serialized release version data returned after creation."""
+
+    id: str
+    name: str
+    project_id: str
+
+
+@dataclass(frozen=True)
+class ReleaseVersionUpdateDTO:
+    """Serialized release version data returned after an update."""
+
+    id: str
+    name: str
+    project_id: str
+
+
+@dataclass(frozen=True)
+class ReleaseVersionDeleteDTO:
+    """Serialized result of permanently deleting a release version."""
+
+    id: str
+
+
+@dataclass(frozen=True)
 class RequirementUpdateDTO:
     """Serialized requirement data returned after an update."""
 

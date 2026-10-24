@@ -7,6 +7,8 @@ from .views import (
     FeatureDetailApi,
     RequirementCollectionApi,
     RequirementDetailApi,
+    ReleaseVersionCollectionApi,
+    ReleaseVersionDetailApi,
 )
 
 
@@ -42,5 +44,15 @@ urlpatterns = [
         "business-rules/<uuid:business_rule_id>/",
         BusinessRuleDetailApi.as_view(),
         name="business-rule-detail",
+    ),
+    path(
+        "release-versions/",
+        ReleaseVersionCollectionApi.as_view(),
+        name="release-version-collection",
+    ),
+    path(
+        "release-versions/<uuid:release_version_id>/",
+        ReleaseVersionDetailApi.as_view(),
+        name="release-version-detail",
     ),
 ]

@@ -2,9 +2,38 @@ from itertools import chain
 
 from django.db.models import Prefetch
 
-from .dtos import BusinessRuleListDTO, FeatureListDTO, RequirementListDTO
+from .dtos import (
+    BusinessRuleListDTO,
+    FeatureListDTO,
+    ReleaseVersionListDTO,
+    RequirementListDTO,
+)
 from .exceptions import BusinessRuleRequirementsNotFoundError
 from .models import BusinessRule, Feature, Requirement
+from .models import ReleaseVersion
+
+
+def release_version_list(*, project_id: str) -> list[ReleaseVersionListDTO]:
+    """Return all release versions ordered by name.
+
+    Args:
+        project_id: Identifier of the project whose versions are listed.
+
+    Returns:
+        Serialized release versions assigned to the project.
+    """
+
+    release_versions = ReleaseVersion.objects.filter(project_id=project_id).order_by(
+        "name"
+    ).values("id", "name", "project_id")
+    return [
+        ReleaseVersionListDTO(
+            id=str(row["id"]),
+            name=row["name"],
+            project_id=str(row["project_id"]),
+        )
+        for row in release_versions
+    ]
 
 
 def requirement_active_id_list(

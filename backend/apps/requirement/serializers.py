@@ -60,6 +60,34 @@ class BusinessRuleUpdateOutputSerializer(BusinessRuleOutputSerializer):
     """Serialize an updated business rule."""
 
 
+class ReleaseVersionCreateInputSerializer(serializers.Serializer):
+    """Validate data required to create a release version."""
+
+    name = serializers.CharField(max_length=255, allow_blank=False, trim_whitespace=True)
+
+
+class ReleaseVersionUpdateInputSerializer(serializers.Serializer):
+    """Validate the name required to update a release version."""
+
+    name = serializers.CharField(max_length=255, allow_blank=False, trim_whitespace=True)
+
+
+class ReleaseVersionOutputSerializer(serializers.Serializer):
+    """Serialize a release version."""
+
+    id = serializers.UUIDField()
+    name = serializers.CharField(max_length=255)
+    project_id = serializers.UUIDField()
+
+
+class ReleaseVersionCreateOutputSerializer(ReleaseVersionOutputSerializer):
+    """Serialize a newly created release version."""
+
+
+class ReleaseVersionUpdateOutputSerializer(ReleaseVersionOutputSerializer):
+    """Serialize an updated release version."""
+
+
 class RequirementCreateInputSerializer(serializers.Serializer):
     """Validate data required to create a requirement."""
 

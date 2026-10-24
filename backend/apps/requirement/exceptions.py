@@ -79,3 +79,27 @@ class BusinessRuleRequirementsNotFoundError(EntityNotFoundError):
 
 class BusinessRuleTextRequiredError(BusinessRuleError):
     """Raised when a business rule has no text."""
+
+
+class ReleaseVersionCreationForbiddenError(PermissionDeniedError):
+    """Raised when a user cannot create release versions for a project."""
+
+
+class ReleaseVersionUpdateForbiddenError(PermissionDeniedError):
+    """Raised when a user cannot update release versions for a project."""
+
+
+class ReleaseVersionDeleteForbiddenError(PermissionDeniedError):
+    """Raised when a user cannot delete release versions for a project."""
+
+
+class ReleaseVersionNotFoundError(EntityNotFoundError):
+    """Raised when a release version does not exist."""
+
+
+class ReleaseVersionNameRequiredError(BusinessRuleError):
+    """Raised when a release version has no name."""
+
+
+class ReleaseVersionNameAlreadyExistsError(BusinessRuleError):
+    """Raised when a release version name is already in use."""
