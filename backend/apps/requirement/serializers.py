@@ -1,6 +1,65 @@
 from rest_framework import serializers
 
 
+class BusinessRuleCreateInputSerializer(serializers.Serializer):
+    """Validate data required to create a business rule."""
+
+    rule = serializers.CharField(allow_blank=False, trim_whitespace=True)
+    requirement_ids = serializers.ListField(
+        child=serializers.UUIDField(),
+        allow_empty=False,
+    )
+
+
+class BusinessRuleUpdateInputSerializer(serializers.Serializer):
+    """Validate editable fields for a business rule."""
+
+    rule = serializers.CharField(
+        allow_blank=False,
+        required=False,
+        trim_whitespace=True,
+    )
+    requirement_ids = serializers.ListField(
+        child=serializers.UUIDField(),
+        allow_empty=False,
+        required=False,
+    )
+
+    def validate(self, attrs):
+        """Reject fields outside the business rule's editable attributes."""
+
+        unsupported_fields = set(self.initial_data) - {"rule", "requirement_ids"}
+        if unsupported_fields:
+            raise serializers.ValidationError(
+                {
+                    field: "This field cannot be changed."
+                    for field in sorted(unsupported_fields)
+                }
+            )
+        if not attrs:
+            raise serializers.ValidationError(
+                "At least one editable field is required."
+            )
+        return attrs
+
+
+class BusinessRuleOutputSerializer(serializers.Serializer):
+    """Serialize a business rule."""
+
+    id = serializers.UUIDField()
+    key = serializers.SlugField(max_length=255)
+    rule = serializers.CharField()
+    requirement_ids = serializers.ListField(child=serializers.UUIDField())
+
+
+class BusinessRuleCreateOutputSerializer(BusinessRuleOutputSerializer):
+    """Serialize a newly created business rule."""
+
+
+class BusinessRuleUpdateOutputSerializer(BusinessRuleOutputSerializer):
+    """Serialize an updated business rule."""
+
+
 class RequirementCreateInputSerializer(serializers.Serializer):
     """Validate data required to create a requirement."""
 

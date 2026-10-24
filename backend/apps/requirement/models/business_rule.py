@@ -10,6 +10,7 @@ class BusinessRule(BaseModel):
 
     key = models.SlugField(max_length=255, unique=True)
     rule = models.TextField()
+    is_deleted = models.BooleanField(default=False)
     requirements = models.ManyToManyField(
         Requirement,
         related_name="business_rules",

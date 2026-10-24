@@ -55,3 +55,27 @@ class FeatureNotFoundError(EntityNotFoundError):
 
 class FeatureTitleRequiredError(BusinessRuleError):
     """Raised when a feature is created without a non-empty title."""
+
+
+class BusinessRuleCreationForbiddenError(PermissionDeniedError):
+    """Raised when a user cannot create business rules in a project."""
+
+
+class BusinessRuleUpdateForbiddenError(PermissionDeniedError):
+    """Raised when a user cannot update business rules in a project."""
+
+
+class BusinessRuleDeleteForbiddenError(PermissionDeniedError):
+    """Raised when a user cannot delete business rules in a project."""
+
+
+class BusinessRuleNotFoundError(EntityNotFoundError):
+    """Raised when an active business rule is not assigned to a project."""
+
+
+class BusinessRuleRequirementsNotFoundError(EntityNotFoundError):
+    """Raised when business rule requirements are not active in the project."""
+
+
+class BusinessRuleTextRequiredError(BusinessRuleError):
+    """Raised when a business rule has no text."""

@@ -1,6 +1,8 @@
 from django.urls import path
 
 from .views import (
+    BusinessRuleCollectionApi,
+    BusinessRuleDetailApi,
     FeatureCollectionApi,
     FeatureDetailApi,
     RequirementCollectionApi,
@@ -30,5 +32,15 @@ urlpatterns = [
         "features/<uuid:feature_id>/",
         FeatureDetailApi.as_view(),
         name="feature-detail",
+    ),
+    path(
+        "business-rules/",
+        BusinessRuleCollectionApi.as_view(),
+        name="business-rule-collection",
+    ),
+    path(
+        "business-rules/<uuid:business_rule_id>/",
+        BusinessRuleDetailApi.as_view(),
+        name="business-rule-detail",
     ),
 ]

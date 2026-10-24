@@ -68,6 +68,44 @@ class FeatureDeleteDTO:
 
 
 @dataclass(frozen=True)
+class BusinessRuleCreateDTO:
+    """Serialized business rule data returned after creation."""
+
+    id: str
+    key: str
+    rule: str
+    requirement_ids: list[str]
+
+
+@dataclass(frozen=True)
+class BusinessRuleListDTO:
+    """Serialized business rule data returned by the project selector."""
+
+    id: str
+    key: str
+    rule: str
+    requirement_ids: list[str]
+
+
+@dataclass(frozen=True)
+class BusinessRuleUpdateDTO:
+    """Serialized business rule data returned after an update."""
+
+    id: str
+    key: str
+    rule: str
+    requirement_ids: list[str]
+
+
+@dataclass(frozen=True)
+class BusinessRuleDeleteDTO:
+    """Serialized result of soft-deleting a business rule."""
+
+    id: str
+    is_deleted: bool
+
+
+@dataclass(frozen=True)
 class RequirementUpdateDTO:
     """Serialized requirement data returned after an update."""
 
