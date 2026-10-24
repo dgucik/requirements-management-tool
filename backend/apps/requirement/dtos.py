@@ -40,6 +40,34 @@ class FeatureCreateDTO:
 
 
 @dataclass(frozen=True)
+class FeatureListDTO:
+    """Serialized feature data returned by the project feature selector."""
+
+    id: str
+    key: str
+    title: str
+    project_id: str
+
+
+@dataclass(frozen=True)
+class FeatureUpdateDTO:
+    """Serialized feature data returned after an update."""
+
+    id: str
+    key: str
+    title: str
+    project_id: str
+
+
+@dataclass(frozen=True)
+class FeatureDeleteDTO:
+    """Serialized result of soft-deleting a feature."""
+
+    id: str
+    is_deleted: bool
+
+
+@dataclass(frozen=True)
 class RequirementUpdateDTO:
     """Serialized requirement data returned after an update."""
 

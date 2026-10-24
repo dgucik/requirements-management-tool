@@ -9,6 +9,7 @@ class Feature(BaseModel):
 
     key = models.SlugField(max_length=255, unique=True)
     title = models.CharField(max_length=255)
+    is_deleted = models.BooleanField(default=False)
     project = models.ForeignKey(
         Project,
         on_delete=models.CASCADE,

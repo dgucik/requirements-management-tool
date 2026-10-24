@@ -84,3 +84,42 @@ class FeatureCreateOutputSerializer(serializers.Serializer):
     key = serializers.SlugField(max_length=255)
     title = serializers.CharField()
     project_id = serializers.UUIDField()
+
+
+class FeatureUpdateInputSerializer(serializers.Serializer):
+    """Validate the title required to update a feature."""
+
+    title = serializers.CharField(max_length=255, allow_blank=False, trim_whitespace=True)
+
+    def validate(self, attrs):
+        """Reject fields outside the feature's editable attributes."""
+
+        unsupported_fields = set(self.initial_data) - {"title"}
+        if unsupported_fields:
+            raise serializers.ValidationError(
+                {
+                    field: "This field cannot be changed."
+                    for field in sorted(unsupported_fields)
+                }
+            )
+        return attrs
+
+
+class FeatureUpdateOutputSerializer(FeatureCreateOutputSerializer):
+    """Serialize an updated project feature."""
+
+
+class FeatureDeleteOutputSerializer(serializers.Serializer):
+    """Serialize a soft-deleted project feature."""
+
+    id = serializers.UUIDField()
+    is_deleted = serializers.BooleanField()
+
+
+class FeatureListOutputSerializer(serializers.Serializer):
+    """Serialize features returned for a project."""
+
+    id = serializers.UUIDField()
+    key = serializers.SlugField(max_length=255)
+    title = serializers.CharField()
+    project_id = serializers.UUIDField()

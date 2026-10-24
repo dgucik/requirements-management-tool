@@ -7,14 +7,28 @@ from rest_framework.views import APIView
 from ..serializers import (
     FeatureCreateInputSerializer,
     FeatureCreateOutputSerializer,
+    FeatureListOutputSerializer,
 )
+from ..selectors import feature_list
 from ..services import feature_create
 
 
 class FeatureCollectionApi(APIView):
-    """Create features in a project."""
+    """List and create features in a project."""
 
     permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        responses=FeatureListOutputSerializer(many=True),
+        summary="List project features",
+        tags=["Features"],
+    )
+    def get(self, request, project_id):
+        """Return all features assigned to the project."""
+
+        features = feature_list(project_id=str(project_id))
+        output_serializer = FeatureListOutputSerializer(features, many=True)
+        return Response(output_serializer.data, status=status.HTTP_200_OK)
 
     @extend_schema(
         request=FeatureCreateInputSerializer,

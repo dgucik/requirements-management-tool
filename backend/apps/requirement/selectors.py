@@ -1,7 +1,34 @@
 from itertools import chain
 
-from .dtos import RequirementListDTO
+from .dtos import FeatureListDTO, RequirementListDTO
 from .models import BusinessRule, Feature, Requirement
+
+
+def feature_list(*, project_id: str) -> list[FeatureListDTO]:
+    """Return all features assigned to a project.
+
+    Args:
+        project_id: Identifier of the project whose features are listed.
+
+    Returns:
+        Features belonging to the project, ordered by key.
+    """
+
+    features = (
+        Feature.objects.filter(project_id=project_id, is_deleted=False)
+        .order_by("key")
+        .values("id", "key", "title", "project_id")
+    )
+
+    return [
+        FeatureListDTO(
+            id=str(row["id"]),
+            key=row["key"],
+            title=row["title"],
+            project_id=str(row["project_id"]),
+        )
+        for row in features
+    ]
 
 
 def key_existing_list() -> list[str]:
@@ -31,6 +58,7 @@ def requirement_list(*, project_id: str) -> list[RequirementListDTO]:
     requirements = (
         Requirement.objects.filter(
             feature__project_id=project_id,
+            feature__is_deleted=False,
             is_deleted=False,
         )
         .order_by("key")

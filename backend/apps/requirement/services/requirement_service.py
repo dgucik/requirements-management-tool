@@ -55,7 +55,9 @@ def requirement_create(
 
     project = project_get(project_id=project_id)
     try:
-        feature = Feature.objects.get(pk=feature_id, project_id=project.id)
+        feature = Feature.objects.get(
+            pk=feature_id, project_id=project.id, is_deleted=False
+        )
     except Feature.DoesNotExist as exc:
         raise RequirementFeatureNotFoundError(
             "Feature does not exist in the selected project."
@@ -126,7 +128,12 @@ def requirement_update(
 
     requirement = (
         Requirement.objects.select_for_update()
-        .filter(pk=requirement_id, feature__project_id=project_id, is_deleted=False)
+        .filter(
+            pk=requirement_id,
+            feature__project_id=project_id,
+            feature__is_deleted=False,
+            is_deleted=False,
+        )
         .first()
     )
     if requirement is None:
@@ -222,7 +229,12 @@ def requirement_delete(
 
     requirement = (
         Requirement.objects.select_for_update()
-        .filter(pk=requirement_id, feature__project_id=project_id, is_deleted=False)
+        .filter(
+            pk=requirement_id,
+            feature__project_id=project_id,
+            feature__is_deleted=False,
+            is_deleted=False,
+        )
         .first()
     )
     if requirement is None:

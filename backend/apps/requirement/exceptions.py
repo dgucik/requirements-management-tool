@@ -41,5 +41,17 @@ class FeatureCreationForbiddenError(PermissionDeniedError):
     """Raised when a user cannot create features in a project."""
 
 
+class FeatureUpdateForbiddenError(PermissionDeniedError):
+    """Raised when a user cannot update features in a project."""
+
+
+class FeatureDeleteForbiddenError(PermissionDeniedError):
+    """Raised when a user cannot delete features in a project."""
+
+
+class FeatureNotFoundError(EntityNotFoundError):
+    """Raised when an active feature does not belong to the project."""
+
+
 class FeatureTitleRequiredError(BusinessRuleError):
     """Raised when a feature is created without a non-empty title."""
